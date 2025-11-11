@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIT Connect - Hack Your Campus</title>
+    <!-- Tailwind & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css.all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#4f46e5', 600: '#4338ca', 900: '#312e81' },
+                        accent: { 500: '#f59e0b' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-100 text-slate-800 h-screen overflow-hidden font-sans">
+
+    <!-- Login/Register Modal -->
+    <div id="loginModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+            <div class="flex">
+                <button id="loginTabBtn" onclick="showLoginTab(true)" class="w-1/2 p-4 font-medium text-center border-b-4 border-brand-600 text-brand-600">Login</button>
+                <button id="regTabBtn" onclick="showLoginTab(false)" class="w-1/2 p-4 font-medium text-center border-b-4 border-transparent text-slate-500">Register</button>
+            </div>
+            
+            <!-- Login Form -->
+            <div id="loginTab" class="p-8 space-y-4">
+                <h2 class="text-2xl font-bold text-center">Welcome Back to SIT Connect</h2>
+                <div>
+                    <label class="text-sm font-medium">Email</label>
+                    <input type="email" id="loginEmail" class="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1" placeholder="student@sit.ac.in">
+                </div>
+                <div>
+                    <label class="text-sm font-medium">Password</label>
+                    <input type="password" id="loginPass" class="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1" placeholder="••••••••">
+                </div>
+                <p id="loginError" class="text-xs text-red-600"></p>
+                <button onclick="handleLogin()" class="w-full bg-brand-600 text-white rounded-lg py-3 font-medium hover:bg-brand-700">Login</button>
+            </div>
+            
+            <!-- Register Form -->
+            <div id="regTab" class="p-8 space-y-4" style="display: none;">
+                <h2 class="text-2xl font-bold text-center">Create your SIT Connect Account</h2>
+                <div>
+                    <label class="text-sm font-medium">Email</label>
+                    <input type="email" id="regEmail" class="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1" placeholder="student@sit.ac.in">
+                </div>
+                <div>
+                    <label class="text-sm font-medium">Password</label>
+                    <input type="password" id="regPass" class="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1" placeholder="Min. 6 characters">
+                </div>
+                <p id="regError" class="text-xs text-red-600"></p>
+                <button onclick="handleRegister()" class="w-full bg-brand-600 text-white rounded-lg py-3 font-medium hover:bg-brand-700">Register</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Main App (Hidden by default) -->
+    <div id="mainApp" class="hidden h-screen w-full">
+
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white border-r border-slate-200 hidden md:flex flex-col z-20">
+            <div class="p-6 flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-brand-900 flex items-center justify-center text-white font-bold text-xl shadow-lg">SIT</div>
+                <div>
+                    <h1 class="text-lg font-bold text-slate-900">SIT Connect</h1>
+                    <p class="text-xs text-slate-500">Tumakuru Campus</p>
+                </div>
+            </div>
+
+            <nav class="flex-1 px-4 space-y-1 mt-4">
+                <button onclick="showSection('dashboard')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg">
+                    <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
+                </button>
+                <button onclick="showSection('planner')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg">
+                    <i class="fa-solid fa-wand-magic-sparkles w-5"></i> SIT Study AI
+                </button>
+                <button onclick="showSection('cafeteria')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg">
+                    <i class="fa-solid fa-utensils w-5"></i> Food Courts
+                </button>
+                <button onclick="showSection('campusbot')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg">
+                    <i class="fa-solid fa-robot w-5"></i> Siddaganga Bot
+                </button>
+            </nav>
+
+            <div class="p-4 border-t border-slate-200">
+                <p class="text-xs text-slate-500 mb-1">Logged in as:</p>
+                <p id="userEmailDisplay" class="text-sm font-semibold text-slate-900 truncate">student@sit.ac.in</p>
+                <button onclick="handleLogout()" class="text-xs text-brand-600 hover:underline mt-1">Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col relative overflow-hidden">
+            
+            <!-- Mobile Header -->
+            <header class="md:hidden bg-white border-b border-slate-200 p-4 flex justify-between items-center z-30">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-brand-900 flex items-center justify-center text-white font-bold shadow-md text-xs">SIT</div>
+                    <span class="font-bold text-lg">SIT Connect</span>
+                </div>
+                <button onclick="toggleMobileMenu()" class="text-slate-600"><i class="fa-solid fa-bars text-xl"></i></button>
+            </header>
+
+            <!-- Mobile Menu Overlay -->
+            <div id="mobileMenu" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="toggleMobileMenu()"></div>
+            <div id="mobileSidebar" class="fixed inset-y-0 left-0 w-64 bg-white transform -translate-x-full transition-transform duration-300 z-50 md:hidden flex flex-col">
+                <nav class="p-4 space-y-2 mt-6">
+                    <button onclick="showSection('dashboard'); toggleMobileMenu()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-100">Dashboard</button>
+                    <button onclick="showSection('planner'); toggleMobileMenu()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-100">Study AI</button>
+                    <button onclick="showSection('cafeteria'); toggleMobileMenu()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-100">Food Courts</button>
+                    <button onclick="showSection('campusbot'); toggleMobileMenu()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-100">Siddaganga Bot</button>
+                    <hr class="my-4">
+                    <button onclick="handleLogout()" class="w-full text-left px-4 py-3 rounded-lg text-red-600 hover:bg-red-50">Logout</button>
+                </nav>
+            </div>
+
+            <!-- Content Area -->
+            <div class="flex-1 overflow-y-auto p-4 md:p-8 relative bg-slate-50">
+                
+                <div id="toast" class="fixed top-4 right-4 bg-brand-900 text-white px-6 py-3 rounded-lg shadow-xl transform translate-y-[-150%] transition-transform duration-300 z-50">
+                    <i class="fa-solid fa-circle-check text-green-400 mr-2"></i><span id="toastMessage"></span>
+                </div>
+
+                <!-- SECTION: DASHBOARD -->
+                <section id="dashboard" class="section-content animate-fade-in space-y-6">
+                    <h2 class="text-3xl font-bold text-slate-900">Namaskara, Student! 🙏</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                            <p class="text-slate-500 text-sm font-medium">ERP Attendance</p>
+                            <h3 class="text-3xl font-bold text-slate-900 mt-1">86%</h3>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                            <p class="text-slate-500 text-sm font-medium">Study Tasks Due</p>
+                            <h3 id="dashboardDueCount" class="text-3xl font-bold text-slate-900 mt-1">0</h3>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                            <p class="text-slate-500 text-sm font-medium">Next Lab</p>
+                            <h3 class="text-xl font-bold text-slate-900 mt-1">DBMS Lab</h3>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm lg:col-span-2">
+                            <h3 class="font-bold text-lg mb-4">Academic Performance (CGPA Trend)</h3>
+                            <canvas id="studyChart" height="150"></canvas>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                            <h3 class="font-bold text-lg mb-4">SIT Events</h3>
+                            <!-- Static events list -->
+                            <div class="space-y-4">
+                                <div class="flex gap-3"><div class="w-12 h-12 rounded-lg bg-indigo-100 text-indigo-600 flex flex-col items-center justify-center flex-shrink-0"><span class="text-xs font-bold">DEC</span><span class="font-bold leading-none">05</span></div><div><h4 class="font-semibold text-sm">Halcyon '25 Auditions</h4><p class="text-xs text-slate-500">Birla Auditorium • 4:30 PM</p></div></div>
+                                <div class="flex gap-3"><div class="w-12 h-12 rounded-lg bg-orange-100 text-orange-600 flex flex-col items-center justify-center flex-shrink-0"><span class="text-xs font-bold">DEC</span><span class="font-bold leading-none">12</span></div><div><h4 class="font-semibold text-sm">TCS Placement Drive</h4><p class="text-xs text-slate-500">T&P Cell • 9:00 AM</p></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION: AI PLANNER -->
+                <section id="planner" class="section-content hidden animate-fade-in max-w-4xl mx-auto">
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-bold text-slate-900">CIE Preparation AI</h2>
+                        <p class="text-slate-500 mt-2">Add a study goal. It will appear here and on your dashboard.</p>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+                        <div class="p-6 bg-slate-50 border-b border-slate-200">
+                            <label class="block text-sm font-medium text-slate-700 mb-2">New Study Goal</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="taskInput" placeholder="e.g. Prepare for Data Structures CIE" class="flex-1 rounded-lg border-slate-300 border px-4 py-3">
+                                <button onclick="generatePlan()" class="bg-brand-600 hover:bg-brand-700 text-white px-6 py-3 rounded-lg font-medium">Add Task</button>
+                            </div>
+                        </div>
+                        <div id="planResult" class="hidden"></div>
+                        <div id="planEmpty" class="p-12 text-center text-slate-400">
+                            <i class="fa-solid fa-brain text-6xl mb-4 opacity-20"></i>
+                            <p>Your saved study tasks will appear here.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION: SMART CAFETERIA -->
+                <section id="cafeteria" class="section-content hidden animate-fade-in space-y-6">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h2 class="text-3xl font-bold text-slate-900">SIT Food Courts (Live)</h2>
+                            <p class="text-slate-500">Real-time crowd data. (This is LIVE from Firestore)</p>
+                        </div>
+                    </div>
+                    <!-- Live Status Cards -->
+                    <div id="cafeteriaGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Content is dynamically generated by listenToCafeteriaData() -->
+                        <p class="text-slate-500">Loading live data...</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                        <h3 class="font-bold text-lg mb-4">Peak Hour Prediction (Main Canteen)</h3>
+                        <canvas id="trafficChart" height="100"></canvas>
+                    </div>
+                </section>
+
+                <!-- SECTION: CAMPUS BOT -->
+                <section id="campusbot" class="section-content hidden animate-fade-in h-[calc(100vh-8rem)] flex flex-col">
+                    <div class="flex-1 bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col overflow-hidden max-w-3xl mx-auto w-full">
+                        <div class="p-4 border-b"><h2 class="text-xl font-bold text-center text-slate-900">Siddaganga Bot 🤖</h2></div>
+                        <div id="chatContainer" class="flex-1 p-6 overflow-y-auto space-y-4 bg-slate-50">
+                            <div class="flex items-start gap-3"><div class="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-600"><i class="fa-solid fa-robot text-sm"></i></div><div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 text-sm text-slate-700 max-w-[80%]">Ask me about SIT locations, exam schedules, or bus timings.</div></div>
+                        </div>
+                        <div class="p-4 bg-white border-t border-slate-200">
+                            <div class="flex gap-2">
+                                <input type="text" id="chatInput" placeholder="Type your question..." class="flex-1 rounded-full border-slate-300 border px-4 py-2 text-sm" onkeypress="handleChatKey(event)">
+                                <button onclick="sendChat()" class="bg-brand-600 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-brand-700"><i class="fa-solid fa-paper-plane text-sm"></i></button>
+                            </div>
+                            <div class="flex gap-2 mt-2 overflow-x-auto pb-1">
+                                <button onclick="fillChat('Where is Birla Auditorium?')" class="whitespace-nowrap text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full">📍 Birla Auditorium</button>
+                                <button onclick="fillChat('Library Timings?')" class="whitespace-nowrap text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full">📚 Library Hours</button>
+                                <button onclick="fillChat('When is the next CIE?')" class="whitespace-nowrap text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full">📝 CIE Dates</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // Import the functions you need from the SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged, 
+            createUserWithEmailAndPassword, 
+            signInWithEmailAndPassword, 
+            signOut,
+            signInAnonymously,
+            signInWithCustomToken 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            doc, 
+            setDoc, 
+            addDoc, 
+            collection, 
+            onSnapshot, 
+            query, 
+            deleteDoc,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- GLOBAL APP STATE ---
+        let auth, db;
+        let userId = null;
+        let studyPlanUnsubscribe = null;
+        let cafeteriaUnsubscribe = null;
+
+        // --- FIREBASE CONFIG ---
+        // These global variables are provided by the environment.
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'sit-connect-hackathon';
+
+        // --- INITIALIZE FIREBASE ---
+        try {
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } catch (e) {
+            console.error("Error initializing Firebase:", e);
+        }
+
+        // --- All code now runs after DOM is loaded ---
+
+        // --- AUTHENTICATION ---
+        onAuthStateChanged(auth, async (user) => {
+            const loginModal = document.getElementById('loginModal');
+            const mainApp = document.getElementById('mainApp');
+
+            if (user) {
+                // User is signed in
+                userId = user.uid;
+                document.getElementById('userEmailDisplay').textContent = user.email || 'Student';
+                
+                // Hide modal, show app
+                loginModal.classList.add('hidden');
+                mainApp.classList.remove('hidden');
+                mainApp.classList.add('flex');
+
+                // Start listening to live data
+                showSection('dashboard');
+                listenToStudyPlan();
+                listenToCafeteriaData();
+
+            } else {
+                // User is signed out
+                userId = null;
+                // Show modal, hide app
+                loginModal.classList.remove('hidden');
+                mainApp.classList.add('hidden');
+                mainApp.classList.remove('flex');
+
+                // Stop listening to data
+                if (studyPlanUnsubscribe) studyPlanUnsubscribe();
+                if (cafeteriaUnsubscribe) cafeteriaUnsubscribe();
+            }
+        });
+        
+        // --- Sign In with Token or Anonymously ---
+        async function initialAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Authentication Error:", error);
+                await signInAnonymously(auth); // Fallback to anonymous
+            }
+        }
+
+        // Call initial auth on load
+        initialAuth();
+
+
+        // --- FIRESTORE DATA LISTENERS ---
+
+        // Listen to the user's personal study plan
+        function listenToStudyPlan() {
+            if (!userId) return;
+            if (studyPlanUnsubscribe) studyPlanUnsubscribe(); // Detach old listener
+
+            const tasksCollection = collection(db, `artifacts/${appId}/users/${userId}/tasks`);
+            const q = query(tasksCollection);
+
+            studyPlanUnsubscribe = onSnapshot(q, (snapshot) => {
+                const tasks = [];
+                snapshot.forEach((doc) => {
+                    tasks.push({ id: doc.id, ...doc.data() });
+                });
+                renderTasks(tasks);
+            }, (error) => {
+                console.error("Error fetching tasks:", error);
+            });
+        }
+        
+        // Listen to public, real-time cafeteria data
+        function listenToCafeteriaData() {
+            if (cafeteriaUnsubscribe) cafeteriaUnsubscribe(); // Detach old listener
+            
+            // This reads from a *public* document that judges can edit
+            const cafeteriaDoc = doc(db, `artifacts/${appId}/public/data/campus`, "liveData");
+
+            cafeteriaUnsubscribe = onSnapshot(cafeteriaDoc, (doc) => {
+                if (doc.exists()) {
+                    const data = doc.data();
+                    updateCafeteriaUI(data);
+                } else {
+                    console.log("No cafeteria data! Creating sample doc...");
+                    // Optional: create a sample doc if it doesn't exist
+                    setDoc(cafeteriaDoc, {
+                        mainCanteen: 50,
+                        nescafe: 50,
+                        nandini: 50
+                    });
+                }
+            }, (error) => {
+                console.error("Error fetching cafeteria data:", error);
+            });
+        }
+
+        // --- UI RENDERING ---
+
+        // Render tasks on the dashboard and planner
+        function renderTasks(tasks) {
+            const plannerEmpty = document.getElementById('planEmpty');
+            const plannerResult = document.getElementById('planResult');
+            const dashboardDueCount = document.getElementById('dashboardDueCount');
+
+            dashboardDueCount.textContent = tasks.length; // Update dashboard stat
+
+            if (tasks.length === 0) {
+                plannerEmpty.classList.remove('hidden');
+                plannerResult.classList.add('hidden');
+                plannerResult.innerHTML = '';
+            } else {
+                plannerEmpty.classList.add('hidden');
+                plannerResult.classList.remove('hidden');
+                
+                let html = `<div class="bg-white">
+                    <div class="p-4 bg-brand-50 border-b border-brand-100">
+                        <h3 class="font-bold text-brand-800"><i class="fa-solid fa-check-double mr-2"></i>Your Study Plan</h3>
+                    </div>
+                    <div class="divide-y divide-slate-100">`;
+                
+                tasks.forEach((task, index) => {
+                    html += `
+                        <div class="p-4 flex gap-4 hover:bg-slate-50 transition-colors group">
+                            <div class="flex flex-col items-center">
+                                <div class="w-8 h-8 rounded-full border-2 border-brand-200 text-brand-600 font-bold flex items-center justify-center text-sm bg-white group-hover:bg-brand-500 group-hover:text-white transition-colors">${index + 1}</div>
+                                ${index !== tasks.length -1 ? '<div class="w-0.5 h-full bg-slate-200 my-1"></div>' : ''}
+                            </div>
+                            <div class="flex-1 pb-2">
+                                <div class="flex justify-between mb-1">
+                                    <h4 class="font-bold text-slate-800">${task.title}</h4>
+                                    <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded"><i class="fa-regular fa-clock mr-1"></i>${task.time}</span>
+                                </div>
+                                <p class="text-sm text-slate-600">${task.desc}</p>
+                                <button onclick="deleteTask('${task.id}')" class="mt-2 text-xs text-red-500 font-medium hover:underline">Mark Done</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div></div>`;
+                plannerResult.innerHTML = html;
+            }
+        }
+
+        // Update cafeteria UI with live data
+        function updateCafeteriaUI(data) {
+            const venues = [
+                { id: 'mainCanteen', name: 'SIT Main Canteen', value: data.mainCanteen || 0 },
+                { id: 'nescafe', name: 'Nescafe Point', value: data.nescafe || 0 },
+                { id: 'nandini', name: 'Nandini Parlour', value: data.nandini || 0 }
+            ];
+
+            const container = document.getElementById('cafeteriaGrid');
+            container.innerHTML = ''; // Clear existing
+            
+            venues.forEach(venue => {
+                let status, color, wait, icon;
+                if (venue.value > 80) {
+                    status = 'PACKED';
+                    color = 'red';
+                    wait = '~15 mins';
+                } else if (venue.value > 40) {
+                    status = 'MODERATE';
+                    color = 'yellow';
+                    wait = '~5 mins';
+                } else {
+                    status = 'LOW TRAFFIC';
+                    color = 'green';
+                    wait = '~2 mins';
+                }
+                
+                if (venue.id === 'mainCanteen') icon = 'fa-utensils text-orange-400';
+                else if (venue.id === 'nescafe') icon = 'fa-mug-hot text-stone-400';
+                else icon = 'fa-ice-cream text-blue-400';
+
+                const html = `
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="h-32 bg-slate-200 relative flex items-center justify-center bg-gradient-to-r from-${color}-100 to-${color}-200">
+                            <i class="fa-solid ${icon} text-4xl opacity-50"></i>
+                            <div class="absolute top-3 right-3 bg-${color}-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm">${status}</div>
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-bold text-lg">${venue.name}</h3>
+                            <div class="space-y-3 mt-4">
+                                <div>
+                                    <div class="flex justify-between text-xs mb-1">
+                                        <span class="font-medium text-slate-600">Current Crowd</span>
+                                        <span class="text-${color}-600 font-bold">${venue.value}%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                                        <div class="bg-${color}-500 h-full" style="width: ${venue.value}%"></div>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center pt-2 border-t border-slate-100">
+                                    <span class="text-xs text-slate-500">Wait: <strong class="text-slate-800">${wait}</strong></span>
+                                </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        }
+        
+        // --- FIRESTORE WRITE ACTIONS ---
+
+        // Add a new task to the study plan
+        window.generatePlan = async () => {
+            if (!userId) return showToast("You must be logged in to create a plan.");
+            
+            const input = document.getElementById('taskInput');
+            const task = input.value.trim();
+            if (!task) return showToast('Please enter a topic!');
+
+            // Mock "AI" breaking it down
+            const aiPlan = {
+                title: task.length > 20 ? task.substring(0, 20) + '...' : task,
+                desc: 'Review notes and solve previous year questions.',
+                time: '2 Hours',
+                createdAt: serverTimestamp()
+            };
+            
+            try {
+                const tasksCollection = collection(db, `artifacts/${appId}/users/${userId}/tasks`);
+                await addDoc(tasksCollection, aiPlan);
+                showToast('Plan added to your dashboard!');
+                input.value = '';
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                showToast('Error saving plan.');
+            }
+        }
+        
+        // Delete a task
+        window.deleteTask = async (taskId) => {
+            if (!userId || !taskId) return;
+            try {
+                const taskDoc = doc(db, `artifacts/${appId}/users/${userId}/tasks`, taskId);
+                await deleteDoc(taskDoc);
+                showToast('Task completed!');
+            } catch (e) {
+                console.error("Error deleting task: ", e);
+                showToast('Error removing task.');
+            }
+        }
+
+        // --- AUTH ACTIONS (Register, Login, Logout) ---
+        window.handleRegister = async () => {
+            const email = document.getElementById('regEmail').value;
+            const pass = document.getElementById('regPass').value;
+            const errorEl = document.getElementById('regError');
+            try {
+                await createUserWithEmailAndPassword(auth, email, pass);
+                // Auth observer will handle the rest
+            } catch (error) {
+                errorEl.textContent = error.message;
+            }
+        }
+        
+        window.handleLogin = async () => {
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPass').value;
+            const errorEl = document.getElementById('loginError');
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                // Auth observer will handle the rest
+            } catch (error) {
+                errorEl.textContent = error.message;
+            }
+        }
+        
+        window.handleLogout = () => {
+            signOut(auth);
+        }
+
+        // --- Make other functions globally accessible ---
+        window.showSection = (sectionId) => {
+            document.querySelectorAll('.section-content').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById(sectionId);
+            if(target) target.classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if(btn.onclick.toString().includes(sectionId)) {
+                    btn.classList.add('bg-brand-50', 'text-brand-600');
+                    btn.classList.remove('text-slate-600');
+                } else {
+                    btn.classList.remove('bg-brand-50', 'text-brand-600');
+                    btn.classList.add('text-slate-600');
+                }
+            });
+
+            if(sectionId === 'dashboard') renderStudyChart();
+            if(sectionId === 'cafeteria') renderTrafficChart();
+        }
+        
+        window.toggleMobileMenu = () => {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+            document.getElementById('mobileSidebar').classList.toggle('-translate-x-full');
+        }
+        
+        window.showToast = (message) => {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.remove('translate-y-[-150%]');
+            setTimeout(() => toast.classList.add('translate-y-[-150%]'), 3000);
+        }
+        
+        // --- Chatbot (remains static for hackathon) ---
+        window.fillChat = (text) => document.getElementById('chatInput').value = text;
+        window.handleChatKey = (e) => e.key === 'Enter' && sendChat();
+        window.sendChat = () => {
+            const input = document.getElementById('chatInput');
+            const container = document.getElementById('chatContainer');
+            const text = input.value.trim();
+            if(!text) return;
+
+            container.innerHTML += `<div class="flex justify-end animate-fade-in"><div class="bg-brand-600 p-3 rounded-2xl rounded-tr-none shadow-md text-sm text-white max-w-[80%]">${text}</div></div>`;
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+
+            setTimeout(() => {
+                let reply = "I'm still learning! Ask about the Library or Birla Auditorium.";
+                const lower = text.toLowerCase();
+                if(lower.includes('library')) reply = "SIT Central Library is open 8 AM - 8 PM on weekdays. Reading room is open till 11 PM during exams.";
+                else if(lower.includes('birla')) reply = "Birla Auditorium is near the main entrance, next to the Admin Block.";
+                else if(lower.includes('cie')) reply = "Check the notice board in the Admin Block or your Department ERP for CIE dates.";
+                
+                container.innerHTML += `<div class="flex items-start gap-3 animate-fade-in"><div class="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-600"><i class="fa-solid fa-robot text-sm"></i></div><div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 text-sm text-slate-700 max-w-[80%]">${reply}</div></div>`;
+                container.scrollTop = container.scrollHeight;
+            }, 800);
+        }
+
+        // --- Charts (static data) ---
+        let studyChartInstance = null;
+        let trafficChartInstance = null;
+        window.renderStudyChart = () => {
+            if(studyChartInstance) studyChartInstance.destroy();
+            studyChartInstance = new Chart(document.getElementById('studyChart').getContext('2d'), {
+                type: 'line', data: { labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'], datasets: [{ label: 'CGPA', data: [7.8, 8.2, 8.0, 8.5], borderColor: '#4f46e5', tension: 0.4 }] },
+                options: { scales: { y: { min: 6, max: 10 } } }
+            });
+        }
+        window.renderTrafficChart = () => {
+            if(trafficChartInstance) trafficChartInstance.destroy();
+            trafficChartInstance = new Chart(document.getElementById('trafficChart').getContext('2d'), {
+                type: 'bar', data: { labels: ['12:30', '1:00', '1:30', '2:00', '4:30'], datasets: [{ label: 'Crowd %', data: [40, 95, 90, 60, 75], backgroundColor: (ctx) => ctx.raw > 80 ? '#ef4444' : ctx.raw > 50 ? '#eab308' : '#22c55e' }] },
+                options: { scales: { y: { max: 100 } } }
+            });
+        }
+        
+        // --- Tab switching for login/reg modal ---
+        window.showLoginTab = (show) => {
+            document.getElementById('loginTab').style.display = show ? 'block' : 'none';
+            document.getElementById('regTab').style.display = show ? 'none' : 'block';
+            document.getElementById('loginTabBtn').classList.toggle('border-brand-600', show);
+            document.getElementById('loginTabBtn').classList.toggle('text-brand-600', show);
+            document.getElementById('regTabBtn').classList.toggle('border-brand-600', !show);
+            document.getElementById('regTabBtn').classList.toggle('text-brand-600', !show);
+        }
+
+    </script>
+</body>
+</html>
