@@ -58,6 +58,14 @@
                     <input type="email" id="regEmail" class="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1" placeholder="student@sit.ac.in">
                 </div>
                 <div>
+                    <label class="text-sm font-medium">USN</label>
+                    <input type="text" id="regUSN" class="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1" placeholder="1SI21CS001">
+                </div>
+                <div>
+                    <label class="text-sm font-medium">Date of Birth</label>
+                    <input type="date" id="regDOB" class="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1">
+                </div>
+                <div>
                     <label class="text-sm font-medium">Password</label>
                     <input type="password" id="regPass" class="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1" placeholder="Min. 6 characters">
                 </div>
@@ -141,16 +149,16 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                            <p class="text-slate-500 text-sm font-medium">ERP Attendance</p>
-                            <h3 class="text-3xl font-bold text-slate-900 mt-1">86%</h3>
+                            <p class="text-slate-500 text-sm font-medium">USN</p>
+                            <h3 id="profileUSN" class="text-3xl font-bold text-slate-900 mt-1">Loading...</h3>
                         </div>
                         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                             <p class="text-slate-500 text-sm font-medium">Study Tasks Due</p>
                             <h3 id="dashboardDueCount" class="text-3xl font-bold text-slate-900 mt-1">0</h3>
                         </div>
                         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                            <p class="text-slate-500 text-sm font-medium">Next Lab</p>
-                            <h3 class="text-xl font-bold text-slate-900 mt-1">DBMS Lab</h3>
+                            <p class="text-slate-500 text-sm font-medium">Date of Birth</p>
+                            <h3 id="profileDOB" class="text-xl font-bold text-slate-900 mt-1">Loading...</h3>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -263,6 +271,7 @@
         let userId = null;
         let studyPlanUnsubscribe = null;
         let cafeteriaUnsubscribe = null;
+        let profileUnsubscribe = null; // Listener for profile data
 
         // --- FIREBASE CONFIG ---
         
@@ -307,6 +316,7 @@
 
                 // Start listening to live data
                 showSection('dashboard');
+                listenToProfile(); // <-- ADDED
                 listenToStudyPlan();
                 listenToCafeteriaData();
 
@@ -321,10 +331,35 @@
                 // Stop listening to data
                 if (studyPlanUnsubscribe) studyPlanUnsubscribe();
                 if (cafeteriaUnsubscribe) cafeteriaUnsubscribe();
+                if (profileUnsubscribe) profileUnsubscribe(); // <-- ADDED
             }
         });
         
         // --- FIRESTORE DATA LISTENERS ---
+
+        // Listen to the user's profile data
+        function listenToProfile() {
+            if (!userId) return;
+            if (profileUnsubscribe) profileUnsubscribe(); // Detach old listener
+
+            const userDocRef = doc(db, `artifacts/${appId}/users`, userId);
+            
+            profileUnsubscribe = onSnapshot(userDocRef, (doc) => {
+                if (doc.exists()) {
+                    const profile = doc.data();
+                    // Populate dashboard with profile data
+                    document.getElementById('profileUSN').textContent = profile.usn || 'N/A';
+                    document.getElementById('profileDOB').textContent = profile.dob || 'N/A';
+                    // Update sidebar email display
+                    document.getElementById('userEmailDisplay').textContent = profile.email || 'Student';
+                } else {
+                    // This might happen briefly if login fires before register doc is set
+                    console.log("No profile document found for user.");
+                }
+            }, (error) => {
+                console.error("Error fetching profile:", error);
+            });
+        }
 
         // Listen to the user's personal study plan
         function listenToStudyPlan() {
@@ -528,10 +563,30 @@
         window.handleRegister = async () => {
             const email = document.getElementById('regEmail').value;
             const pass = document.getElementById('regPass').value;
+            const usn = document.getElementById('regUSN').value.trim();
+            const dob = document.getElementById('regDOB').value;
             const errorEl = document.getElementById('regError');
+
+            if (!usn || !dob) {
+                errorEl.textContent = "Please enter your USN and Date of Birth.";
+                return;
+            }
+
             try {
-                await createUserWithEmailAndPassword(auth, email, pass);
-                // Auth observer will handle the rest
+                // 1. Create the user in Firebase Auth
+                const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+                const userId = userCredential.user.uid;
+
+                // 2. Create their profile document in Firestore
+                const userDocRef = doc(db, `artifacts/${appId}/users`, userId);
+                await setDoc(userDocRef, {
+                    email: email,
+                    usn: usn,
+                    dob: dob,
+                    createdAt: serverTimestamp()
+                });
+                
+                // Auth observer will handle the rest (logging in, showing app)
             } catch (error) {
                 errorEl.textContent = error.message;
             }
