@@ -6,7 +6,7 @@
     <title>SIT Connect - Hack Your Campus</title>
     <!-- Tailwind & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css.all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
@@ -244,37 +244,71 @@
                 </section>
 
                 <!-- SECTION: ADMIN -->
-                <section id="admin" class="section-content hidden animate-fade-in max-w-2xl mx-auto">
-                    <div class="text-center mb-8">
+                <section id="admin" class="section-content hidden animate-fade-in max-w-2xl mx-auto space-y-8">
+                    <div class="text-center">
                         <h2 class="text-3xl font-bold text-slate-900">Admin Controls</h2>
-                        <p class="text-slate-500 mt-2">Change live cafeteria data for all users.</p>
+                        <p class="text-slate-500 mt-2">Manage live data and user profiles.</p>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden p-8 space-y-6">
-                        <div>
-                            <label class="flex justify-between items-center text-sm font-medium text-slate-700 mb-2">
-                                <span><i class="fa-solid fa-utensils text-orange-400 mr-2"></i> SIT Main Canteen</span>
-                                <span class="font-bold text-brand-600"><span id="adminCanteenValue">50</span>%</span>
-                            </label>
-                            <input id="adminCanteen" type="range" min="0" max="100" value="50" class="w-full" oninput="document.getElementById('adminCanteenValue').textContent = this.value">
+
+                    <!-- Cafeteria Controls -->
+                    <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+                        <div class="p-5 border-b bg-slate-50"><h3 class="font-bold text-lg text-slate-800"><i class="fa-solid fa-sliders mr-2"></i> Live Cafeteria Data</h3></div>
+                        <div class="p-8 space-y-6">
+                            <div>
+                                <label class="flex justify-between items-center text-sm font-medium text-slate-700 mb-2">
+                                    <span><i class="fa-solid fa-utensils text-orange-400 mr-2"></i> SIT Main Canteen</span>
+                                    <span class="font-bold text-brand-600"><span id="adminCanteenValue">50</span>%</span>
+                                </label>
+                                <input id="adminCanteen" type="range" min="0" max="100" value="50" class="w-full" oninput="document.getElementById('adminCanteenValue').textContent = this.value">
+                            </div>
+                            <div>
+                                <label class="flex justify-between items-center text-sm font-medium text-slate-700 mb-2">
+                                    <span><i class="fa-solid fa-mug-hot text-stone-400 mr-2"></i> Nescafe Point</span>
+                                    <span class="font-bold text-brand-600"><span id="adminNescafeValue">50</span>%</span>
+                                </label>
+                                <input id="adminNescafe" type="range" min="0" max="100" value="50" class="w-full" oninput="document.getElementById('adminNescafeValue').textContent = this.value">
+                            </div>
+                            <div>
+                                <label class="flex justify-between items-center text-sm font-medium text-slate-700 mb-2">
+                                    <span><i class="fa-solid fa-ice-cream text-blue-400 mr-2"></i> Nandini Parlour</span>
+                                    <span class="font-bold text-brand-600"><span id="adminNandiniValue">50</span>%</span>
+                                </label>
+                                <input id="adminNandini" type="range" min="0" max="100" value="50" class="w-full" oninput="document.getElementById('adminNandiniValue').textContent = this.value">
+                            </div>
+                            <hr class="my-4">
+                            <button onclick="handleAdminSave()" class="w-full bg-red-600 text-white rounded-lg py-3 font-medium hover:bg-red-700">
+                                <i class="fa-solid fa-save mr-2"></i> Save Cafeteria Changes
+                            </button>
                         </div>
-                        <div>
-                            <label class="flex justify-between items-center text-sm font-medium text-slate-700 mb-2">
-                                <span><i class="fa-solid fa-mug-hot text-stone-400 mr-2"></i> Nescafe Point</span>
-                                <span class="font-bold text-brand-600"><span id="adminNescafeValue">50</span>%</span>
-                            </label>
-                            <input id="adminNescafe" type="range" min="0" max="100" value="50" class="w-full" oninput="document.getElementById('adminNescafeValue').textContent = this.value">
+                    </div>
+
+                    <!-- NEW: User Management -->
+                    <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+                        <div class="p-5 border-b bg-slate-50"><h3 class="font-bold text-lg text-slate-800"><i class="fa-solid fa-users-cog mr-2"></i> User Management</h3></div>
+                        <div class="p-8 space-y-4">
+                            <p class="text-sm text-slate-600">Enter a user's email to find and edit their profile.</p>
+                            <div class="flex gap-2">
+                                <input type="email" id="adminFindEmail" placeholder="student@sit.ac.in" class="flex-1 rounded-lg border-slate-300 border px-4 py-2">
+                                <button onclick="findUser()" class="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2 rounded-lg font-medium">Find</button>
+                            </div>
+                            <p id="adminUserError" class="text-xs text-red-600 h-4"></p>
+                            
+                            <!-- Hidden Edit Area -->
+                            <div id="adminEditUserArea" class="hidden space-y-4 pt-4 border-t border-slate-200">
+                                <p class="text-sm font-medium">Editing Profile for: <strong id="adminEditEmail" class="text-brand-600"></strong></p>
+                                <div>
+                                    <label class="text-sm font-medium">USN</label>
+                                    <input type="text" id="adminEditUSN" class="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1">
+                                </div>
+                                <div>
+                                    <label class="text-sm font-medium">Date of Birth</label>
+                                    <input type="date" id="adminEditDOB" class="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1">
+                                </div>
+                                <button onclick="handleAdminUserSave()" class="w-full bg-green-600 text-white rounded-lg py-3 font-medium hover:bg-green-700">
+                                    <i class="fa-solid fa-save mr-2"></i> Save User Changes
+                                </button>
+                            </div>
                         </div>
-                        <div>
-                            <label class="flex justify-between items-center text-sm font-medium text-slate-700 mb-2">
-                                <span><i class="fa-solid fa-ice-cream text-blue-400 mr-2"></i> Nandini Parlour</span>
-                                <span class="font-bold text-brand-600"><span id="adminNandiniValue">50</span>%</span>
-                            </label>
-                            <input id="adminNandini" type="range" min="0" max="100" value="50" class="w-full" oninput="document.getElementById('adminNandiniValue').textContent = this.value">
-                        </div>
-                        <hr class="my-4">
-                        <button onclick="handleAdminSave()" class="w-full bg-red-600 text-white rounded-lg py-3 font-medium hover:bg-red-700">
-                            <i class="fa-solid fa-save mr-2"></i> Save Live Changes
-                        </button>
                     </div>
                 </section>
 
@@ -301,6 +335,8 @@
             collection, 
             onSnapshot, 
             query, 
+            where,      // <-- ADDED
+            getDocs,    // <-- ADDED
             deleteDoc,
             serverTimestamp
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -312,6 +348,7 @@
         let cafeteriaUnsubscribe = null;
         let profileUnsubscribe = null; // Listener for profile data
         let currentLiveData = {}; // Store current live data
+        let currentlyEditingUserId = null; // <-- ADDED for admin
 
         // --- FIREBASE CONFIG ---
         
@@ -364,7 +401,7 @@
 
                 // Start listening to live data
                 showSection('dashboard');
-                listenToProfile(); // <-- ADDED
+                listenToProfile();
                 listenToStudyPlan();
                 listenToCafeteriaData();
 
@@ -382,7 +419,7 @@
                 // Stop listening to data
                 if (studyPlanUnsubscribe) studyPlanUnsubscribe();
                 if (cafeteriaUnsubscribe) cafeteriaUnsubscribe();
-                if (profileUnsubscribe) profileUnsubscribe(); // <-- ADDED
+                if (profileUnsubscribe) profileUnsubscribe();
             }
         });
         
@@ -571,9 +608,10 @@
         
         // --- FIRESTORE WRITE ACTIONS ---
 
-        // --- NEW ADMIN FUNCTION ---
+        // --- ADMIN FUNCTIONS ---
         // Load current data into the admin sliders
         function loadAdminData() {
+            // Cafeteria data
             document.getElementById('adminCanteen').value = currentLiveData.mainCanteen || 50;
             document.getElementById('adminNescafe').value = currentLiveData.nescafe || 50;
             document.getElementById('adminNandini').value = currentLiveData.nandini || 50;
@@ -581,6 +619,12 @@
             document.getElementById('adminCanteenValue').textContent = currentLiveData.mainCanteen || 50;
             document.getElementById('adminNescafeValue').textContent = currentLiveData.nescafe || 50;
             document.getElementById('adminNandiniValue').textContent = currentLiveData.nandini || 50;
+            
+            // Clear user edit fields
+            document.getElementById('adminFindEmail').value = '';
+            document.getElementById('adminEditUserArea').classList.add('hidden');
+            document.getElementById('adminUserError').textContent = '';
+            currentlyEditingUserId = null;
         }
 
         // Save the new data from the admin panel
@@ -606,7 +650,80 @@
                 showToast('Error saving data.');
             }
         }
-        // --- END NEW ADMIN FUNCTIONS ---
+        
+        // --- NEW: Find User by Email (Admin) ---
+        window.findUser = async () => {
+            const emailInput = document.getElementById('adminFindEmail');
+            const editArea = document.getElementById('adminEditUserArea');
+            const errorEl = document.getElementById('adminUserError');
+            
+            const emailToFind = emailInput.value.trim();
+            if (!emailToFind) return;
+
+            editArea.classList.add('hidden');
+            errorEl.textContent = 'Searching...';
+            currentlyEditingUserId = null;
+            
+            // Query Firestore for a user with this email
+            const usersCol = collection(db, `artifacts/${appId}/users`);
+            const q = query(usersCol, where("email", "==", emailToFind));
+
+            try {
+                const querySnapshot = await getDocs(q);
+                if (querySnapshot.empty) {
+                    errorEl.textContent = 'User not found.';
+                    return;
+                }
+                
+                // User found, load their data
+                const userDoc = querySnapshot.docs[0];
+                currentlyEditingUserId = userDoc.id;
+                const userData = userDoc.data();
+                
+                document.getElementById('adminEditEmail').textContent = userData.email;
+                document.getElementById('adminEditUSN').value = userData.usn;
+                document.getElementById('adminEditDOB').value = userData.dob;
+                
+                errorEl.textContent = '';
+                editArea.classList.remove('hidden');
+
+            } catch (e) {
+                console.error("Error finding user:", e);
+                errorEl.textContent = 'An error occurred.';
+            }
+        }
+
+        // --- NEW: Save User Changes (Admin) ---
+        window.handleAdminUserSave = async () => {
+            if (!currentlyEditingUserId) {
+                showToast('No user selected.');
+                return;
+            }
+
+            const newUSN = document.getElementById('adminEditUSN').value;
+            const newDOB = document.getElementById('adminEditDOB').value;
+            
+            const userDocRef = doc(db, `artifacts/${appId}/users`, currentlyEditingUserId);
+
+            try {
+                await setDoc(userDocRef, {
+                    usn: newUSN,
+                    dob: newDOB
+                }, { merge: true }); // merge:true only updates these fields
+                
+                showToast('User profile updated successfully!');
+                
+                // Clear and hide the form
+                document.getElementById('adminEditUserArea').classList.add('hidden');
+                document.getElementById('adminFindEmail').value = '';
+                currentlyEditingUserId = null;
+
+            } catch (e) {
+                console.error("Error updating user:", e);
+                showToast('Error updating profile.');
+            }
+        }
+        // --- END ADMIN FUNCTIONS ---
 
 
         // Add a new task to the study plan
@@ -768,7 +885,7 @@
         }
         window.renderTrafficChart = () => {
             if(trafficChartInstance) trafficChartInstance.destroy();
-            trafficChartInstance = new Chart(document.getElementById('trafficChart').getContext('d'), {
+            trafficChartInstance = new Chart(document.getElementById('trafficChart').getContext('2d'), {
                 type: 'bar', data: { labels: ['12:30', '1:00', '1:30', '2:00', '4:30'], datasets: [{ label: 'Crowd %', data: [40, 95, 90, 60, 75], backgroundColor: (ctx) => ctx.raw > 80 ? '#ef4444' : ctx.raw > 50 ? '#eab308' : '#22c55e' }] },
                 options: { scales: { y: { max: 100 } } }
             });
