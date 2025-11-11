@@ -93,7 +93,7 @@
                 </button>
                 <button onclick="showSection('campusbot')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg">
                     <i class="fa-solid fa-robot w-5"></i> Siddaganga Bot
-                </button>
+                </button>_
             </nav>
 
             <div class="p-4 border-t border-slate-200">
@@ -244,9 +244,7 @@
             onAuthStateChanged, 
             createUserWithEmailAndPassword, 
             signInWithEmailAndPassword, 
-            signOut,
-            signInAnonymously,
-            signInWithCustomToken 
+            signOut
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { 
             getFirestore, 
@@ -267,15 +265,35 @@
         let cafeteriaUnsubscribe = null;
 
         // --- FIREBASE CONFIG ---
-        // These global variables are provided by the environment.
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'sit-connect-hackathon';
+        
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBgLNarhtQ94FqMih4H3-qu0lE5jUu79QQ",
+  authDomain: "sit-connect-hackathon.firebaseapp.com",
+  projectId: "sit-connect-hackathon",
+  storageBucket: "sit-connect-hackathon.firebasestorage.app",
+  messagingSenderId: "600010413731",
+  appId: "1:600010413731:web:62a6b47ccf280b05bcd116",
+  measurementId: "G-HQ64BNDDZP"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
         // --- INITIALIZE FIREBASE ---
         try {
             const app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             db = getFirestore(app);
+            console.log("Firebase Initialized Successfully!"); // For debugging
         } catch (e) {
             console.error("Error initializing Firebase:", e);
         }
@@ -316,31 +334,14 @@
             }
         });
         
-        // --- Sign In with Token or Anonymously ---
-        async function initialAuth() {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Authentication Error:", error);
-                await signInAnonymously(auth); // Fallback to anonymous
-            }
-        }
-
-        // Call initial auth on load
-        initialAuth();
-
-
         // --- FIRESTORE DATA LISTENERS ---
 
         // Listen to the user's personal study plan
         function listenToStudyPlan() {
             if (!userId) return;
             if (studyPlanUnsubscribe) studyPlanUnsubscribe(); // Detach old listener
-
+            
+            // This is the correct path for a private user collection
             const tasksCollection = collection(db, `artifacts/${appId}/users/${userId}/tasks`);
             const q = query(tasksCollection);
 
@@ -359,7 +360,7 @@
         function listenToCafeteriaData() {
             if (cafeteriaUnsubscribe) cafeteriaUnsubscribe(); // Detach old listener
             
-            // This reads from a *public* document that judges can edit
+            // This path MUST match what you created in Part 2 of my instructions
             const cafeteriaDoc = doc(db, `artifacts/${appId}/public/data/campus`, "liveData");
 
             cafeteriaUnsubscribe = onSnapshot(cafeteriaDoc, (doc) => {
@@ -379,6 +380,9 @@
                 console.error("Error fetching cafeteria data:", error);
             });
         }
+        
+        // --- This needs to be defined for the listeners ---
+        const appId = firebaseConfig.projectId; // Use your project ID as the appId
 
         // --- UI RENDERING ---
 
@@ -628,7 +632,7 @@
         }
         window.renderTrafficChart = () => {
             if(trafficChartInstance) trafficChartInstance.destroy();
-            trafficChartInstance = new Chart(document.getElementById('trafficChart').getContext('2d'), {
+            trafficChartInstance = new Chart(document.getElementById('trafficChart').getContext('d'), {
                 type: 'bar', data: { labels: ['12:30', '1:00', '1:30', '2:00', '4:30'], datasets: [{ label: 'Crowd %', data: [40, 95, 90, 60, 75], backgroundColor: (ctx) => ctx.raw > 80 ? '#ef4444' : ctx.raw > 50 ? '#eab308' : '#22c55e' }] },
                 options: { scales: { y: { max: 100 } } }
             });
