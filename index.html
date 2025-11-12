@@ -157,8 +157,8 @@
                             <h3 id="profileUSN" class="text-3xl font-bold text-slate-900 mt-1">Loading...</h3>
                         </div>
                         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                            <p class="text-slate-500 text-sm font-medium">Study Tasks Due</p>
-                            <h3 id="dashboardDueCount" class="text-3xl font-bold text-slate-900 mt-1">0</h3>
+                            <p class="text-slate-500 text-sm font-medium">Current CGPA</p>
+                            <h3 id="profileCGPA" class="text-3xl font-bold text-slate-900 mt-1">0.0</h3>
                         </div>
                         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                             <p class="text-slate-500 text-sm font-medium">Date of Birth</p>
@@ -244,7 +244,7 @@
                 </section>
 
                 <!-- SECTION: ADMIN -->
-                <section id="admin" class="section-content hidden animate-fade-in max-w-2xl mx-auto space-y-8">
+                <section id="admin" class="section-content hidden animate-fade-in max-w-4xl mx-auto space-y-8">
                     <div class="text-center">
                         <h2 class="text-3xl font-bold text-slate-900">Admin Controls</h2>
                         <p class="text-slate-500 mt-2">Manage live data and user profiles.</p>
@@ -284,18 +284,17 @@
 
                     <!-- NEW: User Management -->
                     <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
-                        <div class="p-5 border-b bg-slate-50"><h3 class="font-bold text-lg text-slate-800"><i class="fa-solid fa-users-cog mr-2"></i> User Management</h3></div>
-                        <div class="p-8 space-y-4">
-                            <p class="text-sm text-slate-600">Enter a user's email to find and edit their profile.</p>
-                            <div class="flex gap-2">
-                                <input type="email" id="adminFindEmail" placeholder="student@sit.ac.in" class="flex-1 rounded-lg border-slate-300 border px-4 py-2">
-                                <button onclick="findUser()" class="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2 rounded-lg font-medium">Find</button>
-                            </div>
-                            <p id="adminUserError" class="text-xs text-red-600 h-4"></p>
-                            
-                            <!-- Hidden Edit Area -->
-                            <div id="adminEditUserArea" class="hidden space-y-4 pt-4 border-t border-slate-200">
-                                <p class="text-sm font-medium">Editing Profile for: <strong id="adminEditEmail" class="text-brand-600"></strong></p>
+                        <div class="p-5 border-b bg-slate-50 flex justify-between items-center">
+                            <h3 class="font-bold text-lg text-slate-800"><i class="fa-solid fa-users-cog mr-2"></i> User Management</h3>
+                            <button onclick="loadAllUsers()" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg font-medium text-sm">
+                                <i class="fa-solid fa-sync mr-1"></i> Load All Students
+                            </button>
+                        </div>
+                        
+                        <!-- Hidden Edit Area -->
+                        <div id="adminEditUserArea" class="hidden p-8 space-y-4 bg-slate-100">
+                            <p class="text-sm font-medium">Editing Profile for: <strong id="adminEditEmail" class="text-brand-600"></strong></p>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label class="text-sm font-medium">USN</label>
                                     <input type="text" id="adminEditUSN" class="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1">
@@ -304,10 +303,36 @@
                                     <label class="text-sm font-medium">Date of Birth</label>
                                     <input type="date" id="adminEditDOB" class="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1">
                                 </div>
-                                <button onclick="handleAdminUserSave()" class="w-full bg-green-600 text-white rounded-lg py-3 font-medium hover:bg-green-700">
+                                <div>
+                                    <label class="text-sm font-medium">CGPA</label>
+                                    <input type="number" id="adminEditCGPA" step="0.01" min="0" max="10" class="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1">
+                                </div>
+                            </div>
+                            <div class="flex gap-2 pt-2">
+                                <button onclick="handleAdminUserSave()" class="flex-1 bg-green-600 text-white rounded-lg py-3 font-medium hover:bg-green-700">
                                     <i class="fa-solid fa-save mr-2"></i> Save User Changes
                                 </button>
+                                <button onclick="cancelAdminUserSave()" class="bg-slate-500 text-white rounded-lg py-3 px-4 font-medium hover:bg-slate-600">
+                                    Cancel
+                                </button>
                             </div>
+                        </div>
+
+                        <!-- User List Table -->
+                        <div id="adminUserListContainer" class="p-8">
+                            <p id="adminUserListEmpty" class="text-sm text-slate-500 text-center">Click "Load All Students" to see user data.</p>
+                            <table id="adminUserList" class="hidden w-full text-left text-sm">
+                                <thead class="border-b border-slate-300 text-slate-500">
+                                    <tr>
+                                        <th class="py-2 px-3">Email</th>
+                                        <th class="py-2 px-3">USN</th>
+                                        <th class="py-2 px-3"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- User rows will be injected here -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </section>
@@ -335,8 +360,8 @@
             collection, 
             onSnapshot, 
             query, 
-            where,      // <-- ADDED
-            getDocs,    // <-- ADDED
+            where,
+            getDocs,
             deleteDoc,
             serverTimestamp
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -348,7 +373,7 @@
         let cafeteriaUnsubscribe = null;
         let profileUnsubscribe = null; // Listener for profile data
         let currentLiveData = {}; // Store current live data
-        let currentlyEditingUserId = null; // <-- ADDED for admin
+        let currentlyEditingUserId = null; // <-- MODIFIED for admin
 
         // --- FIREBASE CONFIG ---
         
@@ -438,6 +463,7 @@
                     // Populate dashboard with profile data
                     document.getElementById('profileUSN').textContent = profile.usn || 'N/A';
                     document.getElementById('profileDOB').textContent = profile.dob || 'N/A';
+                    document.getElementById('profileCGPA').textContent = profile.cgpa || 'N/A'; // <-- NEW
                     // Update sidebar email display
                     document.getElementById('userEmailDisplay').textContent = profile.email || 'Student';
                 } else {
@@ -504,9 +530,10 @@
         function renderTasks(tasks) {
             const plannerEmpty = document.getElementById('planEmpty');
             const plannerResult = document.getElementById('planResult');
-            const dashboardDueCount = document.getElementById('dashboardDueCount');
+            // const dashboardDueCount = document.getElementById('dashboardDueCount'); // <-- REMOVED
 
-            dashboardDueCount.textContent = tasks.length; // Update dashboard stat
+            // dashboardDueCount.textContent = tasks.length; // <-- REMOVED
+            // The card now shows CGPA from listenToProfile
 
             if (tasks.length === 0) {
                 plannerEmpty.classList.remove('hidden');
@@ -621,9 +648,10 @@
             document.getElementById('adminNandiniValue').textContent = currentLiveData.nandini || 50;
             
             // Clear user edit fields
-            document.getElementById('adminFindEmail').value = '';
             document.getElementById('adminEditUserArea').classList.add('hidden');
-            document.getElementById('adminUserError').textContent = '';
+            document.getElementById('adminUserList').classList.add('hidden');
+            document.getElementById('adminUserListEmpty').classList.remove('hidden');
+            document.getElementById('adminUserList').getElementsByTagName('tbody')[0].innerHTML = '';
             currentlyEditingUserId = null;
         }
 
@@ -651,49 +679,81 @@
             }
         }
         
-        // --- NEW: Find User by Email (Admin) ---
-        window.findUser = async () => {
-            const emailInput = document.getElementById('adminFindEmail');
-            const editArea = document.getElementById('adminEditUserArea');
-            const errorEl = document.getElementById('adminUserError');
+        // --- NEW: Load All Users (Admin) ---
+        window.loadAllUsers = async () => {
+            const tableBody = document.getElementById('adminUserList').getElementsByTagName('tbody')[0];
+            const table = document.getElementById('adminUserList');
+            const emptyEl = document.getElementById('adminUserListEmpty');
             
-            const emailToFind = emailInput.value.trim();
-            if (!emailToFind) return;
-
-            editArea.classList.add('hidden');
-            errorEl.textContent = 'Searching...';
-            currentlyEditingUserId = null;
+            tableBody.innerHTML = ''; // Clear list
+            emptyEl.textContent = 'Loading users...';
+            table.classList.add('hidden');
             
-            // Query Firestore for a user with this email
+            // Query Firestore for all users
             const usersCol = collection(db, `artifacts/${appId}/users`);
-            const q = query(usersCol, where("email", "==", emailToFind));
-
+            
             try {
-                const querySnapshot = await getDocs(q);
+                const querySnapshot = await getDocs(usersCol);
                 if (querySnapshot.empty) {
-                    errorEl.textContent = 'User not found.';
+                    emptyEl.textContent = 'No student users found.';
                     return;
                 }
                 
-                // User found, load their data
-                const userDoc = querySnapshot.docs[0];
-                currentlyEditingUserId = userDoc.id;
-                const userData = userDoc.data();
+                // Users found, build the table
+                querySnapshot.forEach(doc => {
+                    const userData = doc.data();
+                    const userId = doc.id;
+                    
+                    // Create JSON strings for the onclick handler (handles quotes)
+                    const email = JSON.stringify(userData.email);
+                    const usn = JSON.stringify(userData.usn);
+                    const dob = JSON.stringify(userData.dob);
+                    const cgpa = userData.cgpa || 8.0; // Default if not set
+                    const id = JSON.stringify(userId);
+
+                    tableBody.innerHTML += `
+                        <tr class="border-b border-slate-100 hover:bg-slate-50">
+                            <td class="py-3 px-3">${userData.email}</td>
+                            <td class="py-3 px-3">${userData.usn}</td>
+                            <td class="py-3 px-3 text-right">
+                                <button onclick='editUser(${id}, ${email}, ${usn}, ${dob}, ${cgpa})' class="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-md text-xs font-medium hover:bg-indigo-200">Edit</button>
+                            </td>
+                        </tr>
+                    `;
+                });
                 
-                document.getElementById('adminEditEmail').textContent = userData.email;
-                document.getElementById('adminEditUSN').value = userData.usn;
-                document.getElementById('adminEditDOB').value = userData.dob;
-                
-                errorEl.textContent = '';
-                editArea.classList.remove('hidden');
+                emptyEl.classList.add('hidden');
+                table.classList.remove('hidden');
 
             } catch (e) {
-                console.error("Error finding user:", e);
-                errorEl.textContent = 'An error occurred.';
+                console.error("Error finding users:", e);
+                emptyEl.textContent = 'An error occurred while loading users.';
             }
         }
+        
+        // --- NEW: Edit User (Admin) ---
+        window.editUser = (userId, email, usn, dob, cgpa) => {
+            currentlyEditingUserId = userId;
+            
+            // Populate the form
+            document.getElementById('adminEditEmail').textContent = email;
+            document.getElementById('adminEditUSN').value = usn;
+            document.getElementById('adminEditDOB').value = dob;
+            document.getElementById('adminEditCGPA').value = cgpa;
+            
+            // Show the form
+            document.getElementById('adminEditUserArea').classList.remove('hidden');
+            // Scroll to the form
+            document.getElementById('adminEditUserArea').scrollIntoView({ behavior: 'smooth' });
+        }
 
-        // --- NEW: Save User Changes (Admin) ---
+        // --- NEW: Cancel Edit User (Admin) ---
+        window.cancelAdminUserSave = () => {
+            document.getElementById('adminEditUserArea').classList.add('hidden');
+            currentlyEditingUserId = null;
+        }
+
+        // --- UPDATED: Save User Changes (Admin) ---
         window.handleAdminUserSave = async () => {
             if (!currentlyEditingUserId) {
                 showToast('No user selected.');
@@ -702,21 +762,25 @@
 
             const newUSN = document.getElementById('adminEditUSN').value;
             const newDOB = document.getElementById('adminEditDOB').value;
+            const newCGPA = parseFloat(document.getElementById('adminEditCGPA').value); // <-- NEW
             
             const userDocRef = doc(db, `artifacts/${appId}/users`, currentlyEditingUserId);
 
             try {
                 await setDoc(userDocRef, {
                     usn: newUSN,
-                    dob: newDOB
+                    dob: newDOB,
+                    cgpa: newCGPA // <-- NEW
                 }, { merge: true }); // merge:true only updates these fields
                 
                 showToast('User profile updated successfully!');
                 
                 // Clear and hide the form
                 document.getElementById('adminEditUserArea').classList.add('hidden');
-                document.getElementById('adminFindEmail').value = '';
                 currentlyEditingUserId = null;
+                
+                // Refresh the list to show new data
+                loadAllUsers();
 
             } catch (e) {
                 console.error("Error updating user:", e);
@@ -790,6 +854,7 @@
                     email: email,
                     usn: usn,
                     dob: dob,
+                    cgpa: 8.0, // <-- NEW DEFAULT CGPA
                     createdAt: serverTimestamp()
                 });
                 
@@ -878,7 +943,7 @@
         let trafficChartInstance = null;
         window.renderStudyChart = () => {
             if(studyChartInstance) studyChartInstance.destroy();
-            studyChartInstance = new Chart(document.getElementById('studyChart').getContext('2d'), {
+            studyChartInstance = new Chart(document.getElementById('studyChart').getContext('d'), {
                 type: 'line', data: { labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'], datasets: [{ label: 'CGPA', data: [7.8, 8.2, 8.0, 8.5], borderColor: '#4f46e5', tension: 0.4 }] },
                 options: { scales: { y: { min: 6, max: 10 } } }
             });
