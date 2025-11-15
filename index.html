@@ -61,6 +61,16 @@
                     <label class="text-sm font-medium">USN</label>
                     <input type="text" id="regUSN" class="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1" placeholder="1SI21CS001">
                 </div>
+                <!-- NEW FIELDS -->
+                <div>
+                    <label class="text-sm font-medium">Program (e.g. B.E-CS)</label>
+                    <input type="text" id="regProgram" class="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1" placeholder="B.E-CS">
+                </div>
+                <div>
+                    <label class="text-sm font-medium">Semester (e.g. 3)</label>
+                    <input type="number" id="regSemester" class="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1" placeholder="3">
+                </div>
+                <!-- END NEW FIELDS -->
                 <div>
                     <label class="text-sm font-medium">Date of Birth</label>
                     <input type="date" id="regDOB" class="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1">
@@ -102,7 +112,7 @@
                 <button onclick="showSection('campusbot')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg">
                     <i class="fa-solid fa-robot w-5"></i> Siddaganga Bot
                 </button>
-                <!-- HIDDEN ADMIN BUTTON -->
+                <!-- ADMIN BUTTON - NOW VISIBLE TO ALL -->
                 <button id="adminNavButton" onclick="showSection('admin')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-red-600" style="display: none;">
                     <i class="fa-solid fa-shield-halved w-5"></i> Admin
                 </button>
@@ -149,12 +159,14 @@
 
                 <!-- SECTION: DASHBOARD -->
                 <section id="dashboard" class="section-content animate-fade-in space-y-6">
-                    <h2 class="text-3xl font-bold text-slate-900">Namaskara, Student! 🙏</h2>
+                    <!-- NEW: Dynamic Greeting -->
+                    <h2 id="welcomeGreeting" class="text-3xl font-bold text-slate-900">Welcome, Student!</h2>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- NEW: 4-col grid with Proctor/Info Card -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                             <p class="text-slate-500 text-sm font-medium">USN</p>
-                            <h3 id="profileUSN" class="text-3xl font-bold text-slate-900 mt-1">Loading...</h3>
+                            <h3 id="profileUSN" class="text-3xl font-bold text-slate-900 mt-1 truncate">Loading...</h3>
                         </div>
                         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                             <p class="text-slate-500 text-sm font-medium">Current CGPA</p>
@@ -164,7 +176,15 @@
                             <p class="text-slate-500 text-sm font-medium">Date of Birth</p>
                             <h3 id="profileDOB" class="text-xl font-bold text-slate-900 mt-1">Loading...</h3>
                         </div>
+                        <!-- NEW Info Card -->
+                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                            <p class="text-slate-500 text-sm font-medium">My Info</p>
+                            <h3 id="profileProgram" class="text-xl font-bold text-slate-900 mt-1">Loading...</h3>
+                            <p id="profileSemester" class="text-sm text-slate-600">Semester Loading...</p>
+                            <p class="text-xs text-slate-500 mt-3 font-medium">Proctor: <span id="profileProctor" class="font-bold text-slate-700">DR. N.R. SUNITHA</span></p>
+                        </div>
                     </div>
+                    
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm lg:col-span-2">
                             <h3 class="font-bold text-lg mb-4">Academic Performance (CGPA Trend)</h3>
@@ -172,10 +192,35 @@
                         </div>
                         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                             <h3 class="font-bold text-lg mb-4">SIT Events</h3>
-                            <!-- Static events list -->
+                            <!-- NEW: Updated Static events list from Contineo.html -->
                             <div class="space-y-4">
-                                <div class="flex gap-3"><div class="w-12 h-12 rounded-lg bg-indigo-100 text-indigo-600 flex flex-col items-center justify-center flex-shrink-0"><span class="text-xs font-bold">DEC</span><span class="font-bold leading-none">05</span></div><div><h4 class="font-semibold text-sm">Halcyon '25 Auditions</h4><p class="text-xs text-slate-500">Birla Auditorium • 4:30 PM</p></div></div>
-                                <div class="flex gap-3"><div class="w-12 h-12 rounded-lg bg-orange-100 text-orange-600 flex flex-col items-center justify-center flex-shrink-0"><span class="text-xs font-bold">DEC</span><span class="font-bold leading-none">12</span></div><div><h4 class="font-semibold text-sm">TCS Placement Drive</h4><p class="text-xs text-slate-500">T&P Cell • 9:00 AM</p></div></div>
+                                <div class="flex gap-3">
+                                    <div class="w-12 h-12 rounded-lg bg-orange-100 text-orange-600 flex flex-col items-center justify-center flex-shrink-0">
+                                        <span class="text-xs font-bold">OCT</span><span class="font-bold leading-none">13</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-sm">I Test (III, V, VII Sem)</h4>
+                                        <p class="text-xs text-slate-500">Starts Oct 13th, Ends Oct 15th</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-3">
+                                    <div class="w-12 h-12 rounded-lg bg-indigo-100 text-indigo-600 flex flex-col items-center justify-center flex-shrink-0">
+                                        <span class="text-xs font-bold">OCT</span><span class="font-bold leading-none">31</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-sm">Parents Meeting</h4>
+                                        <p class="text-xs text-slate-500">Check Dept. for schedule</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-3">
+                                    <div class="w-12 h-12 rounded-lg bg-teal-100 text-teal-600 flex flex-col items-center justify-center flex-shrink-0">
+                                        <span class="text-xs font-bold">NOV</span><span class="font-bold leading-none">21</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-sm">SPANDANA</h4>
+                                        <p class="text-xs text-slate-500">Kannada Cultural Programme</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -208,7 +253,7 @@
                     <div class="flex justify-between items-center">
                         <div>
                             <h2 class="text-3xl font-bold text-slate-900">SIT Food Courts (Live)</h2>
-                            <p class="text-slate-500">Real-time crowd data. (This is LIVE from Firestore)</p>
+                            <p class="text-slate-500">Real-time crowd data simulated from class timetable.</p>
                         </div>
                     </div>
                     <!-- Live Status Cards -->
@@ -247,42 +292,13 @@
                 <section id="admin" class="section-content hidden animate-fade-in max-w-4xl mx-auto space-y-8">
                     <div class="text-center">
                         <h2 class="text-3xl font-bold text-slate-900">Admin Controls</h2>
-                        <p class="text-slate-500 mt-2">Manage live data and user profiles.</p>
+                        <p class="text-slate-500 mt-2">Manage user profiles. (Now accessible to all users for demo)</p>
                     </div>
 
-                    <!-- Cafeteria Controls -->
-                    <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
-                        <div class="p-5 border-b bg-slate-50"><h3 class="font-bold text-lg text-slate-800"><i class="fa-solid fa-sliders mr-2"></i> Live Cafeteria Data</h3></div>
-                        <div class="p-8 space-y-6">
-                            <div>
-                                <label class="flex justify-between items-center text-sm font-medium text-slate-700 mb-2">
-                                    <span><i class="fa-solid fa-utensils text-orange-400 mr-2"></i> SIT Main Canteen</span>
-                                    <span class="font-bold text-brand-600"><span id="adminCanteenValue">50</span>%</span>
-                                </label>
-                                <input id="adminCanteen" type="range" min="0" max="100" value="50" class="w-full" oninput="document.getElementById('adminCanteenValue').textContent = this.value">
-                            </div>
-                            <div>
-                                <label class="flex justify-between items-center text-sm font-medium text-slate-700 mb-2">
-                                    <span><i class="fa-solid fa-mug-hot text-stone-400 mr-2"></i> Nescafe Point</span>
-                                    <span class="font-bold text-brand-600"><span id="adminNescafeValue">50</span>%</span>
-                                </label>
-                                <input id="adminNescafe" type="range" min="0" max="100" value="50" class="w-full" oninput="document.getElementById('adminNescafeValue').textContent = this.value">
-                            </div>
-                            <div>
-                                <label class="flex justify-between items-center text-sm font-medium text-slate-700 mb-2">
-                                    <span><i class="fa-solid fa-ice-cream text-blue-400 mr-2"></i> Nandini Parlour</span>
-                                    <span class="font-bold text-brand-600"><span id="adminNandiniValue">50</span>%</span>
-                                </label>
-                                <input id="adminNandini" type="range" min="0" max="100" value="50" class="w-full" oninput="document.getElementById('adminNandiniValue').textContent = this.value">
-                            </div>
-                            <hr class="my-4">
-                            <button onclick="handleAdminSave()" class="w-full bg-red-600 text-white rounded-lg py-3 font-medium hover:bg-red-700">
-                                <i class="fa-solid fa-save mr-2"></i> Save Cafeteria Changes
-                            </button>
-                        </div>
-                    </div>
+                    <!-- Cafeteria Controls (REMOVED) -->
+                    <!-- The simulation now runs automatically -->
 
-                    <!-- NEW: User Management -->
+                    <!-- User Management -->
                     <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
                         <div class="p-5 border-b bg-slate-50 flex justify-between items-center">
                             <h3 class="font-bold text-lg text-slate-800"><i class="fa-solid fa-users-cog mr-2"></i> User Management</h3>
@@ -291,21 +307,29 @@
                             </button>
                         </div>
                         
-                        <!-- Hidden Edit Area -->
+                        <!-- Updated Hidden Edit Area -->
                         <div id="adminEditUserArea" class="hidden p-8 space-y-4 bg-slate-100">
                             <p class="text-sm font-medium">Editing Profile for: <strong id="adminEditEmail" class="text-brand-600"></strong></p>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-sm font-medium">Program</label>
+                                    <input type="text" id="adminEditProgram" class="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1">
+                                </div>
+                                <div>
+                                    <label class="text-sm font-medium">Semester</label>
+                                    <input type="number" id="adminEditSemester" class="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1">
+                                </div>
                                 <div>
                                     <label class="text-sm font-medium">USN</label>
                                     <input type="text" id="adminEditUSN" class="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1">
                                 </div>
                                 <div>
-                                    <label class="text-sm font-medium">Date of Birth</label>
-                                    <input type="date" id="adminEditDOB" class="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1">
-                                </div>
-                                <div>
                                     <label class="text-sm font-medium">CGPA</label>
                                     <input type="number" id="adminEditCGPA" step="0.01" min="0" max="10" class="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="text-sm font-medium">Date of Birth</label>
+                                    <input type="date" id="adminEditDOB" class="w-full border border-slate-300 rounded-lg px-3 py-2 mt-1">
                                 </div>
                             </div>
                             <div class="flex gap-2 pt-2">
@@ -372,13 +396,12 @@
         let studyPlanUnsubscribe = null;
         let cafeteriaUnsubscribe = null;
         let profileUnsubscribe = null; // Listener for profile data
-        let currentLiveData = {}; // Store current live data
-        let currentlyEditingUserId = null; // <-- MODIFIED for admin
+        let trafficSimInterval = null; // Interval for traffic simulation
+        let currentlyEditingUserId = null; 
 
         // --- FIREBASE CONFIG ---
         
         // Your web app's Firebase configuration
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
         const firebaseConfig = {
           apiKey: "AIzaSyBgLNarhtQ94FqMih4H3-qu0lE5jUu79QQ",
           authDomain: "sit-connect-hackathon.firebaseapp.com",
@@ -416,19 +439,35 @@
                 mainApp.classList.remove('hidden');
                 mainApp.classList.add('flex');
 
-                // *** ADMIN CHECK ***
-                // This is the new part. Change this email to your own admin account.
-                const adminEmail = "admin@sit.ac.in";
-                if (user.email === adminEmail) {
-                    document.getElementById('adminNavButton').style.display = 'flex';
+                // *** NEW: DYNAMIC GREETING ***
+                const hour = new Date().getHours();
+                const greetingEl = document.getElementById('welcomeGreeting');
+                if (hour < 12) {
+                    greetingEl.innerHTML = 'Good Morning, Student! <span class="text-yellow-400">☀️</span>';
+                } else if (hour < 18) {
+                    greetingEl.innerHTML = 'Good Afternoon, Student! 👋';
+                } else {
+                    greetingEl.innerHTML = 'Good Evening, Student! 🌙';
                 }
+                // *** END DYNAMIC GREETING ***
+
+                // *** ADMIN CHECK - REMOVED ***
+                // Admin button is now shown for all users
+                document.getElementById('adminNavButton').style.display = 'flex';
                 // *** END ADMIN CHECK ***
 
                 // Start listening to live data
                 showSection('dashboard');
                 listenToProfile();
                 listenToStudyPlan();
-                listenToCafeteriaData();
+                listenToCafeteriaData(); // All users listen
+
+                // *** NEW: START TRAFFIC SIMULATION ***
+                // All users will run the simulation. The last write wins.
+                // This is fine for a hackathon demo.
+                if (trafficSimInterval) clearInterval(trafficSimInterval);
+                runTrafficSimulation(); // Run immediately on login
+                trafficSimInterval = setInterval(runTrafficSimulation, 60000); // Run every 60 seconds
 
             } else {
                 // User is signed out
@@ -445,6 +484,7 @@
                 if (studyPlanUnsubscribe) studyPlanUnsubscribe();
                 if (cafeteriaUnsubscribe) cafeteriaUnsubscribe();
                 if (profileUnsubscribe) profileUnsubscribe();
+                if (trafficSimInterval) clearInterval(trafficSimInterval); // Stop simulation
             }
         });
         
@@ -463,11 +503,14 @@
                     // Populate dashboard with profile data
                     document.getElementById('profileUSN').textContent = profile.usn || 'N/A';
                     document.getElementById('profileDOB').textContent = profile.dob || 'N/A';
-                    document.getElementById('profileCGPA').textContent = profile.cgpa || 'N/A'; // <-- NEW
+                    document.getElementById('profileCGPA').textContent = profile.cgpa || 'N/A';
+                    // NEW
+                    document.getElementById('profileProgram').textContent = profile.program || 'N/A';
+                    document.getElementById('profileSemester').textContent = profile.semester ? `Semester ${profile.semester}` : 'N/A';
+                    
                     // Update sidebar email display
                     document.getElementById('userEmailDisplay').textContent = profile.email || 'Student';
                 } else {
-                    // This might happen briefly if login fires before register doc is set
                     console.log("No profile document found for user.");
                 }
             }, (error) => {
@@ -480,7 +523,6 @@
             if (!userId) return;
             if (studyPlanUnsubscribe) studyPlanUnsubscribe(); // Detach old listener
             
-            // This is the correct path for a private user collection
             const tasksCollection = collection(db, `artifacts/${appId}/users/${userId}/tasks`);
             const q = query(tasksCollection);
 
@@ -499,22 +541,15 @@
         function listenToCafeteriaData() {
             if (cafeteriaUnsubscribe) cafeteriaUnsubscribe(); // Detach old listener
             
-            // This path MUST match what you created in Part 2 of my instructions
             const cafeteriaDoc = doc(db, `artifacts/${appId}/public/data/campus`, "liveData");
 
             cafeteriaUnsubscribe = onSnapshot(cafeteriaDoc, (doc) => {
                 if (doc.exists()) {
                     const data = doc.data();
-                    currentLiveData = data; // Save data for admin panel
                     updateCafeteriaUI(data);
                 } else {
                     console.log("No cafeteria data! Creating sample doc...");
-                    // Optional: create a sample doc if it doesn't exist
-                    setDoc(cafeteriaDoc, {
-                        mainCanteen: 50,
-                        nescafe: 50,
-                        nandini: 50
-                    });
+                    // This will be created by the simulation if it doesn't exist
                 }
             }, (error) => {
                 console.error("Error fetching cafeteria data:", error);
@@ -530,9 +565,6 @@
         function renderTasks(tasks) {
             const plannerEmpty = document.getElementById('planEmpty');
             const plannerResult = document.getElementById('planResult');
-            // const dashboardDueCount = document.getElementById('dashboardDueCount'); // <-- REMOVED
-
-            // dashboardDueCount.textContent = tasks.length; // <-- REMOVED
             // The card now shows CGPA from listenToProfile
 
             if (tasks.length === 0) {
@@ -635,18 +667,58 @@
         
         // --- FIRESTORE WRITE ACTIONS ---
 
+        // --- NEW: TRAFFIC SIMULATION ---
+        function runTrafficSimulation() {
+            const now = new Date();
+            const day = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+            const hour = now.getHours();
+            const minute = now.getMinutes();
+            const time = hour + (minute / 60); // e.g., 10:30 AM = 10.5
+
+            let canteen = 10;
+            let nescafe = 15;
+            let nandini = 5;
+
+            // 0 = Sunday
+            if (day > 0) { // Weekdays (Mon-Sat)
+                if (time >= 8 && time < 9.5) { // Breakfast rush
+                    canteen = 75; nescafe = 60; nandini = 40;
+                } else if (time >= 10 && time < 10.75) { // 10:00 - 10:45 AM (Short Break)
+                    canteen = 95; nescafe = 90; nandini = 80;
+                } else if (time >= 12.5 && time < 14) { // 12:30 PM - 2:00 PM (Lunch Break)
+                    canteen = 100; nescafe = 85; nandini = 75;
+                } else if (time >= 16 && time < 17.5) { // 4:00 PM - 5:30 PM (Evening Break)
+                    canteen = 60; nescafe = 70; nandini = 50;
+                }
+            } else {
+                // Sunday - low all day
+                canteen = 20; nescafe = 25; nandini = 15;
+            }
+            
+            // Push this data to Firebase
+            updateSimulatedTraffic(canteen, nescafe, nandini);
+        }
+
+        async function updateSimulatedTraffic(canteenVal, nescafeVal, nandiniVal) {
+            // This function writes to the DB. All users are listening.
+            const cafeteriaDoc = doc(db, `artifacts/${appId}/public/data/campus`, "liveData");
+            try {
+                await setDoc(cafeteriaDoc, {
+                    mainCanteen: canteenVal,
+                    nescafe: nescafeVal,
+                    nandini: nandiniVal
+                }, { merge: true });
+                console.log("Traffic simulation updated.");
+            } catch (e) {
+                console.error("Error updating live data: ", e);
+            }
+        }
+        // --- END TRAFFIC SIMULATION ---
+
+
         // --- ADMIN FUNCTIONS ---
-        // Load current data into the admin sliders
+        // Load current data into the admin panel (User Management only)
         function loadAdminData() {
-            // Cafeteria data
-            document.getElementById('adminCanteen').value = currentLiveData.mainCanteen || 50;
-            document.getElementById('adminNescafe').value = currentLiveData.nescafe || 50;
-            document.getElementById('adminNandini').value = currentLiveData.nandini || 50;
-            
-            document.getElementById('adminCanteenValue').textContent = currentLiveData.mainCanteen || 50;
-            document.getElementById('adminNescafeValue').textContent = currentLiveData.nescafe || 50;
-            document.getElementById('adminNandiniValue').textContent = currentLiveData.nandini || 50;
-            
             // Clear user edit fields
             document.getElementById('adminEditUserArea').classList.add('hidden');
             document.getElementById('adminUserList').classList.add('hidden');
@@ -655,31 +727,9 @@
             currentlyEditingUserId = null;
         }
 
-        // Save the new data from the admin panel
-        window.handleAdminSave = async () => {
-            const canteenVal = parseInt(document.getElementById('adminCanteen').value);
-            const nescafeVal = parseInt(document.getElementById('adminNescafe').value);
-            const nandiniVal = parseInt(document.getElementById('adminNandini').value);
-
-            const cafeteriaDoc = doc(db, `artifacts/${appId}/public/data/campus`, "liveData");
-            
-            try {
-                // Use setDoc with merge to update or create
-                await setDoc(cafeteriaDoc, {
-                    mainCanteen: canteenVal,
-                    nescafe: nescafeVal,
-                    nandini: nandiniVal
-                }, { merge: true });
-                
-                showToast('Live cafeteria data has been updated!');
-                showSection('cafeteria'); // Go to cafeteria to see change
-            } catch (e) {
-                console.error("Error updating live data: ", e);
-                showToast('Error saving data.');
-            }
-        }
+        // handleAdminSave (for cafeteria) is no longer needed and has been removed.
         
-        // --- NEW: Load All Users (Admin) ---
+        // --- Load All Users (Admin) ---
         window.loadAllUsers = async () => {
             const tableBody = document.getElementById('adminUserList').getElementsByTagName('tbody')[0];
             const table = document.getElementById('adminUserList');
@@ -689,7 +739,6 @@
             emptyEl.textContent = 'Loading users...';
             table.classList.add('hidden');
             
-            // Query Firestore for all users
             const usersCol = collection(db, `artifacts/${appId}/users`);
             
             try {
@@ -699,16 +748,16 @@
                     return;
                 }
                 
-                // Users found, build the table
                 querySnapshot.forEach(doc => {
                     const userData = doc.data();
                     const userId = doc.id;
                     
-                    // Create JSON strings for the onclick handler (handles quotes)
                     const email = JSON.stringify(userData.email);
                     const usn = JSON.stringify(userData.usn);
                     const dob = JSON.stringify(userData.dob);
-                    const cgpa = userData.cgpa || 8.0; // Default if not set
+                    const program = JSON.stringify(userData.program); 
+                    const semester = JSON.stringify(userData.semester); 
+                    const cgpa = userData.cgpa || 8.0; 
                     const id = JSON.stringify(userId);
 
                     tableBody.innerHTML += `
@@ -716,7 +765,7 @@
                             <td class="py-3 px-3">${userData.email}</td>
                             <td class="py-3 px-3">${userData.usn}</td>
                             <td class="py-3 px-3 text-right">
-                                <button onclick='editUser(${id}, ${email}, ${usn}, ${dob}, ${cgpa})' class="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-md text-xs font-medium hover:bg-indigo-200">Edit</button>
+                                <button onclick='editUser(${id}, ${email}, ${usn}, ${dob}, ${cgpa}, ${program}, ${semester})' class="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-md text-xs font-medium hover:bg-indigo-200">Edit</button>
                             </td>
                         </tr>
                     `;
@@ -731,29 +780,28 @@
             }
         }
         
-        // --- NEW: Edit User (Admin) ---
-        window.editUser = (userId, email, usn, dob, cgpa) => {
+        // --- Edit User (Admin) ---
+        window.editUser = (userId, email, usn, dob, cgpa, program, semester) => {
             currentlyEditingUserId = userId;
             
-            // Populate the form
             document.getElementById('adminEditEmail').textContent = email;
             document.getElementById('adminEditUSN').value = usn;
             document.getElementById('adminEditDOB').value = dob;
             document.getElementById('adminEditCGPA').value = cgpa;
+            document.getElementById('adminEditProgram').value = program || ''; 
+            document.getElementById('adminEditSemester').value = semester || ''; 
             
-            // Show the form
             document.getElementById('adminEditUserArea').classList.remove('hidden');
-            // Scroll to the form
             document.getElementById('adminEditUserArea').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // --- NEW: Cancel Edit User (Admin) ---
+        // --- Cancel Edit User (Admin) ---
         window.cancelAdminUserSave = () => {
             document.getElementById('adminEditUserArea').classList.add('hidden');
             currentlyEditingUserId = null;
         }
 
-        // --- UPDATED: Save User Changes (Admin) ---
+        // --- Save User Changes (Admin) ---
         window.handleAdminUserSave = async () => {
             if (!currentlyEditingUserId) {
                 showToast('No user selected.');
@@ -762,7 +810,9 @@
 
             const newUSN = document.getElementById('adminEditUSN').value;
             const newDOB = document.getElementById('adminEditDOB').value;
-            const newCGPA = parseFloat(document.getElementById('adminEditCGPA').value); // <-- NEW
+            const newCGPA = parseFloat(document.getElementById('adminEditCGPA').value);
+            const newProgram = document.getElementById('adminEditProgram').value; 
+            const newSemester = document.getElementById('adminEditSemester').value; 
             
             const userDocRef = doc(db, `artifacts/${appId}/users`, currentlyEditingUserId);
 
@@ -770,16 +820,16 @@
                 await setDoc(userDocRef, {
                     usn: newUSN,
                     dob: newDOB,
-                    cgpa: newCGPA // <-- NEW
-                }, { merge: true }); // merge:true only updates these fields
+                    cgpa: newCGPA,
+                    program: newProgram, 
+                    semester: newSemester 
+                }, { merge: true }); 
                 
                 showToast('User profile updated successfully!');
                 
-                // Clear and hide the form
                 document.getElementById('adminEditUserArea').classList.add('hidden');
                 currentlyEditingUserId = null;
                 
-                // Refresh the list to show new data
                 loadAllUsers();
 
             } catch (e) {
@@ -798,7 +848,6 @@
             const task = input.value.trim();
             if (!task) return showToast('Please enter a topic!');
 
-            // Mock "AI" breaking it down
             const aiPlan = {
                 title: task.length > 20 ? task.substring(0, 20) + '...' : task,
                 desc: 'Review notes and solve previous year questions.',
@@ -836,10 +885,12 @@
             const pass = document.getElementById('regPass').value;
             const usn = document.getElementById('regUSN').value.trim();
             const dob = document.getElementById('regDOB').value;
+            const program = document.getElementById('regProgram').value.trim(); // NEW
+            const semester = document.getElementById('regSemester').value.trim(); // NEW
             const errorEl = document.getElementById('regError');
 
-            if (!usn || !dob) {
-                errorEl.textContent = "Please enter your USN and Date of Birth.";
+            if (!usn || !dob || !program || !semester) { // UPDATED
+                errorEl.textContent = "Please fill out all profile fields.";
                 return;
             }
 
@@ -854,6 +905,8 @@
                     email: email,
                     usn: usn,
                     dob: dob,
+                    program: program, // NEW
+                    semester: semester, // NEW
                     cgpa: 8.0, // <-- NEW DEFAULT CGPA
                     createdAt: serverTimestamp()
                 });
@@ -943,7 +996,7 @@
         let trafficChartInstance = null;
         window.renderStudyChart = () => {
             if(studyChartInstance) studyChartInstance.destroy();
-            studyChartInstance = new Chart(document.getElementById('studyChart').getContext('d'), {
+            studyChartInstance = new Chart(document.getElementById('studyChart').getContext('2d'), {
                 type: 'line', data: { labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'], datasets: [{ label: 'CGPA', data: [7.8, 8.2, 8.0, 8.5], borderColor: '#4f46e5', tension: 0.4 }] },
                 options: { scales: { y: { min: 6, max: 10 } } }
             });
