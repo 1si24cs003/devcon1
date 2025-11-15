@@ -8,3 +8,7 @@ Develop AI-based tools or platforms that improve student life and campus experie
 Identify everyday problems students face and solve them using technology.
 Focus on making campus activities more efficient, accessible, and connected.
 Your project should be practical, data-driven, and helpful for the entire campus community. 
+
+Used Firebase Deploy
+Project Console: https://console.firebase.google.com/project/sit-connect-hackathon/overview      
+Hosting URL: https://sit-connect-hackathon.web.app
