@@ -83,7 +83,7 @@
         </div>
     </div>
     
-    <!-- NEW: Delete Confirmation Modal -->
+    <!-- Delete Confirmation Modal -->
     <div id="deleteModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
             <h2 class="text-2xl font-bold text-slate-900">Are you sure?</h2>
@@ -813,6 +813,15 @@
                 const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
                 const user = userCredential.user;
                 
+                // ** FIX: Create parent document for querying **
+                const parentUserDocRef = doc(db, `artifacts/${appId}/users`, user.uid);
+                await setDoc(parentUserDocRef, {
+                    email: user.email,
+                    usn: usn,
+                    program: program
+                });
+
+                // Create profile subcollection document
                 const profileData = {
                     email: user.email,
                     usn: usn,
@@ -858,15 +867,32 @@
             emptyMsg.classList.add('hidden');
 
             try {
-                const usersCollectionGroup = collection(db, `artifacts/${appId}/users`);
-                const userDocs = await getDocs(usersCollectionGroup);
+                // ** FIX: Query the parent 'users' collection **
+                const usersCollectionRef = collection(db, `artifacts/${appId}/users`);
+                const userDocsSnapshot = await getDocs(usersCollectionRef);
                 
                 let allProfiles = [];
-                for (const userDoc of userDocs.docs) {
+                // This loop will now correctly find all user documents
+                for (const userDoc of userDocsSnapshot.docs) { 
                     const profileDocRef = doc(db, `artifacts/${appId}/users/${userDoc.id}/profile`, 'userData');
                     const profileDoc = await getDoc(profileDocRef);
+                    
                     if (profileDoc.exists()) {
                         allProfiles.push({ id: userDoc.id, ...profileDoc.data() });
+                    } else {
+                        // This can happen if profile creation failed, but parent doc exists
+                        console.warn("User doc found but no profile sub-doc:", userDoc.id);
+                        // Still add them to the list, but with data from the parent doc
+                        const parentData = userDoc.data();
+                        allProfiles.push({ 
+                            id: userDoc.id, 
+                            email: parentData.email, 
+                            usn: parentData.usn,
+                            program: parentData.program,
+                            cgpa: 'N/A',
+                            dob: 'N/A',
+                            semester: 'N/A'
+                        });
                     }
                 }
                 
@@ -893,10 +919,9 @@
                             <td class="py-3 px-3 font-medium text-slate-800">${user.email}</td>
                             <td class="py-3 px-3">${user.usn || 'N/A'}</td>
                             <td class="py-3 px-3">${user.program || 'N/A'}</td>
-                            <td class="py-3 px-3 font-medium">${user.cgpa ? user.cgpa.toFixed(1) : 'N/A'}</td>
+                            <td class="py-3 px-3 font-medium">${(typeof user.cgpa === 'number') ? user.cgpa.toFixed(1) : 'N/A'}</td>
                             <td class="py-3 px-3 text-right">
                                 <button data-user='${userJson}' class="edit-user-btn text-sm text-brand-600 font-medium hover:underline">Edit</button>
-                                <!-- NEW DELETE BUTTON -->
                                 <button data-user-id="${user.id}" data-user-email="${user.email}" class="delete-user-btn text-sm text-red-600 font-medium hover:underline ml-2">Delete</button>
                             </td>
                         </tr>
@@ -931,9 +956,9 @@
             document.getElementById('adminEditEmail').textContent = user.email;
             document.getElementById('adminEditUSN').value = user.usn || '';
             document.getElementById('adminEditDOB').value = user.dob || '';
-            document.getElementById('adminEditCGPA').value = user.cgpa || 0;
+            document.getElementById('adminEditCGPA').value = (typeof user.cgpa === 'number') ? user.cgpa : 0;
             document.getElementById('adminEditProgram').value = user.program || '';
-            document.getElementById('adminEditSemester').value = user.semester || 0;
+            document.getElementById('adminEditSemester').value = (typeof user.semester === 'number') ? user.semester : 0;
         }
 
         // Hide the edit form
@@ -955,9 +980,17 @@
             };
 
             try {
+                // ** FIX: Update profile sub-doc **
                 const userDocRef = doc(db, `artifacts/${appId}/users/${adminEditingUserId}/profile`, 'userData');
                 await updateDoc(userDocRef, updatedData);
                 
+                // ** FIX: Also update the parent doc for querying **
+                const parentUserDocRef = doc(db, `artifacts/${appId}/users`, adminEditingUserId);
+                await updateDoc(parentUserDocRef, {
+                    usn: updatedData.usn,
+                    program: updatedData.program
+                });
+
                 showToast('User profile updated successfully!');
                 cancelAdminUserSave(); // Hide form
                 loadAllUsers(); // Refresh list
@@ -967,7 +1000,7 @@
             }
         }
         
-        // --- NEW DELETE USER FUNCTIONS ---
+        // --- DELETE USER FUNCTIONS ---
         function showDeleteModal(userId, userEmail) {
             userToDelete = { id: userId, email: userEmail };
             document.getElementById('deleteUserName').textContent = userEmail;
@@ -986,7 +1019,7 @@
             showToast('Deleting user data...');
             
             try {
-                // 1. Delete all tasks in the "tasks" subcollection (Batch delete)
+                // 1. Delete all tasks in the "tasks" subcollection
                 const tasksCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/tasks`);
                 const tasksSnapshot = await getDocs(tasksCollectionRef);
                 const batch = writeBatch(db);
@@ -998,6 +1031,10 @@
                 // 2. Delete the user's profile document
                 const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/profile`, 'userData');
                 await deleteDoc(userDocRef);
+                
+                // ** FIX: Delete the parent user document **
+                const parentUserDocRef = doc(db, `artifacts/${appId}/users`, userId);
+                await deleteDoc(parentUserDocRef);
                 
                 showToast('User data deleted successfully.');
                 hideDeleteModal();
