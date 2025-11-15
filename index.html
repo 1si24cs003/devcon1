@@ -131,6 +131,7 @@
                 <button data-section="campusbot" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg">
                     <i class="fa-solid fa-robot w-5"></i> Siddaganga Bot
                 </button>
+                <!-- ADMIN BUTTON - Now hidden by default -->
                 <button id="adminNavButton" data-section="admin" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg text-red-600" style="display: none;">
                     <i class="fa-solid fa-shield-halved w-5"></i> Admin
                 </button>
@@ -291,47 +292,55 @@
                         </div>
                         <div class="lg:col-span-1 bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
                             <h3 class="font-bold text-lg mb-4">Key Locations</h3>
+                            <!-- NEW: Upgraded, scrollable location list -->
                             <div class="space-y-3 max-h-[450px] overflow-y-auto pr-2">
                                 <a href="https://maps.google.com/maps?cid=16683031220794618752" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 rounded-lg">
                                     <i class="fa-solid fa-map-pin text-brand-600 w-5 text-center"></i>
-                                    <span class="text-sm font-medium text-slate-700">Main Campus (SIT)</span>
+                                    <span class="text-sm font-medium text-slate-700">(Main) SIT Campus</span>
                                 </a>
                                 <a href="https://goo.gl/maps/k1KJFbsqnpaFdua48" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 rounded-lg">
                                     <i class="fa-solid fa-building text-slate-500 w-5 text-center"></i>
-                                    <span class="text-sm font-medium text-slate-700">AD Block (Admin)</span>
+                                    <span class="text-sm font-medium text-slate-700">#1 - AD Block (Admin)</span>
                                 </a>
-                                <a href="https://goo.gl/maps/44g1VpNtGCz9Qnfr5" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 rounded-lg">
-                                    <i class="fa-solid fa-person-chalkboard text-slate-500 w-5 text-center"></i>
-                                    <span class="text-sm font-medium text-slate-700">Civil Engg. Seminar Hall</span>
+                                <a href="https://maps.google.com/maps?cid=16683031220794618752&q=Birla+Auditorium" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 rounded-lg">
+                                    <i class="fa-solid fa-masks-theater text-slate-500 w-5 text-center"></i>
+                                    <span class="text-sm font-medium text-slate-700">#2 - Birla Auditorium</span>
+                                </a>
+                                <a href="https://maps.google.com/maps?cid=16683031220794618752&q=T.N+Kempahonnaiah+Library" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 rounded-lg">
+                                    <i class="fa-solid fa-book-bookmark text-slate-500 w-5 text-center"></i>
+                                    <span class="text-sm font-medium text-slate-700">#3 - T.N Kempahonnaiah Library</span>
+                                </a>
+                                <a href="https://maps.google.com/maps?cid=16683031220794618752&q=Mechanical+Engineering+Block" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 rounded-lg">
+                                    <i class="fa-solid fa-gear text-slate-500 w-5 text-center"></i>
+                                    <span class="text-sm font-medium text-slate-700">#5 - Mechanical Engg. Block</span>
                                 </a>
                                 <a href="https://goo.gl/maps/fcdWAUoYqNbVF6DJA" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 rounded-lg">
                                     <i class="fa-solid fa-microchip text-slate-500 w-5 text-center"></i>
-                                    <span class="text-sm font-medium text-slate-700">ECE Dept.</span>
+                                    <span class="text-sm font-medium text-slate-700">#9 - ECE Dept.</span>
                                 </a>
-                                <a href="https://www.sit.ac.in/department/library-information-center" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 rounded-lg">
-                                    <i class="fa-solid fa-book-bookmark text-slate-500 w-5 text-center"></i>
-                                    <span class="text-sm font-medium text-slate-700">T.N Kempahonnaiah Library</span>
+                                <a href="https://goo.gl/maps/44g1VpNtGCz9Qnfr5" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 rounded-lg">
+                                    <i class="fa-solid fa-ruler-combined text-slate-500 w-5 text-center"></i>
+                                    <span class="text-sm font-medium text-slate-700">#14 - Civil Engg. Dept.</span>
                                 </a>
-                                <a href="https://www.sit.ac.in/hostels" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 rounded-lg">
+                                <a href="https://maps.google.com/maps?cid=16683031220794618752&q=SIT+Canteen" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 rounded-lg">
+                                    <i class="fa-solid fa-utensils text-slate-500 w-5 text-center"></i>
+                                    <span class="text-sm font-medium text-slate-700">#17 - Canteen</span>
+                                </a>
+                                 <a href="https://maps.google.com/maps?cid=16683031220794618752&q=Akkamahadevi+Hostel" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 rounded-lg">
                                     <i class="fa-solid fa-bed text-slate-500 w-5 text-center"></i>
-                                    <span class="text-sm font-medium text-slate-700">Basaveshwara Hostel Block</span>
+                                    <span class="text-sm font-medium text-slate-700">#20 - Akkamahadevi Hostel (Girls)</span>
                                 </a>
-                                <a href="https{
-  "key": "AIzaSyBgLNarhtQ94FqMih4H3-qu0lE5jUu79QQ",
-  "authDomain": "sit-connect-hackathon.firebaseapp.com",
-  "projectId": "sit-connect-hackathon",
-  "storageBucket": "sit-connect-hackathon.firebasestorage.app",
-  "messagingSenderId": "600010413731",
-  "appId": "1:600010413731:web:62a6b47ccf280b05bcd116",
-  "measurementId": "G-HQ64BNDDZP"
-}
-.ac.in/hostels" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 rounded-lg">
+                                <a href="httpsS://maps.google.com/maps?cid=16683031220794618752&q=Basaveshwara+Block+Hostel" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 rounded-lg">
                                     <i class="fa-solid fa-bed text-slate-500 w-5 text-center"></i>
-                                    <span class="text-sm font-medium text-slate-700">Akkamahadevi Block (Girls)</span>
+                                    <span class="text-sm font-medium text-slate-700">#21 - Basaveshwara Hostel (Boys)</span>
                                 </a>
-                                <a href="https://www.sit.ac.in/campus-life/sports" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 rounded-lg">
+                                 <a href="https://maps.google.com/maps?cid=16683031220794618752&q=SIT+Health+Centre" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 rounded-lg">
+                                    <i class="fa-solid fa-suitcase-medical text-slate-500 w-5 text-center"></i>
+                                    <span class="text-sm font-medium text-slate-700">#27 - Health Centre</span>
+                                </a>
+                                <a href="https://maps.google.com/maps?cid=16683031220794618752&q=SIT+Stadium" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 rounded-lg">
                                     <i class="fa-solid fa-futbol text-slate-500 w-5 text-center"></i>
-                                    <span class="text-sm font-medium text-slate-700">SIT Stadium</span>
+                                    <span class="text-sm font-medium text-slate-700">#33 - SIT Stadium</span>
                                 </a>
                             </div>
                         </div>
@@ -435,7 +444,7 @@
                                             <th class="py-2 px-3">USN</th>
                                             <th class="py-2 px-3">Program</th>
                                             <th class="py-2 px-3">CGPA</th>
-                                            <th classD="py-2 px-3"></th>
+                                            <th class="py-2 px-3"></th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-slate-100" id="adminUserListBody">
@@ -531,8 +540,13 @@
                 mainApp.classList.remove('hidden');
                 mainApp.classList.add('flex');
 
-                // *** ADMIN CHECK - NOW VISIBLE TO ALL ***
-                document.getElementById('adminNavButton').style.display = 'flex';
+                // *** ADMIN CHECK - RESTRICTED ***
+                const adminEmail = "admin@sit.ac.in";
+                if (user.email === adminEmail) {
+                    document.getElementById('adminNavButton').style.display = 'flex';
+                } else {
+                    document.getElementById('adminNavButton').style.display = 'none';
+                }
                 
                 // Start listening to live data
                 setWelcomeGreeting();
@@ -1097,15 +1111,20 @@
 
         
         // --- Chatbot (UPGRADED) ---
+        // NEW: Expanded mapLocations
         const mapLocations = {
+            "main": { name: "SIT Main Campus", link: "https://maps.google.com/maps?cid=16683031220794618752", index: 0 },
             "admin": { name: "AD Block (Admin)", link: "https://goo.gl/maps/k1KJFbsqnpaFdua48", index: 1 },
-            "library": { name: "T.N Kempahonnaiah Library", link: "https://www.sit.ac.in/department/library-information-center", index: 3 },
-            "ece": { name: "ECE Dept.", link: "https://goo.gl/maps/fcdWAUoYqNbVF6DJA", index: 16 },
-            "civil": { name: "Civil Engg. Seminar Hall", link: "https://goo.gl/maps/44g1VpNtGCz9Qnfr5", index: 17 },
-            "stadium": { name: "SIT Stadium", link: "https://www.sit.ac.in/campus-life/sports", index: 33 },
-            "hostel": { name: "Basaveshwara Hostel", link: "https://www.sit.ac.in/hostels", index: 21 },
-            "canteen": { name: "Canteen", link: "#", index: 17 },
-            "birla": { name: "Birla Auditorium", link: "#", index: 2 }
+            "birla": { name: "Birla Auditorium", link: "https://maps.google.com/maps?cid=16683031220794618752&q=Birla+Auditorium", index: 2 },
+            "library": { name: "T.N Kempahonnaiah Library", link: "https://maps.google.com/maps?cid=16683031220794618752&q=T.N+Kempahonnaiah+Library", index: 3 },
+            "mechanical": { name: "Mechanical Engg. Block", link: "https://maps.google.com/maps?cid=16683031220794618752&q=Mechanical+Engineering+Block", index: 5 },
+            "ece": { name: "ECE Dept.", link: "https://goo.gl/maps/fcdWAUoYqNbVF6DJA", index: 9 }, // E&C Engg Lab
+            "civil": { name: "Civil Engg. Dept.", link: "https://goo.gl/maps/44g1VpNtGCz9Qnfr5", index: 14 },
+            "canteen": { name: "SIT Canteen", link: "https://maps.google.com/maps?cid=16683031220794618752&q=SIT+Canteen", index: 17 },
+            "hostel_akka": { name: "Akkamahadevi Hostel (Girls)", link: "https://maps.google.com/maps?cid=16683031220794618752&q=Akkamahadevi+Hostel", index: 20 },
+            "hostel_basava": { name: "Basaveshwara Hostel (Boys)", link: "https://maps.google.com/maps?cid=16683031220794618752&q=Basaveshwara+Block+Hostel", index: 21 },
+            "health": { name: "Health Centre", link: "https://maps.google.com/maps?cid=16683031220794618752&q=SIT+Health+Centre", index: 27 },
+            "stadium": { name: "SIT Stadium", link: "https://maps.google.com/maps?cid=16683031220794618752&q=SIT+Stadium", index: 33 }
         };
 
         // NEW SMARTER BOT
@@ -1135,7 +1154,7 @@
 
             // --- Location Questions (with abbreviations) ---
             if (lower.includes('library') || lower.includes('lib') || lower.includes('books')) {
-                return `The <strong>${mapLocations.library.name}</strong> is <strong>#${mapLocations.library.index}</strong> on the map. <a href="${mapLocations.library.link}" target="_blank" class="text-brand-600 underline">Get details here</a>.`;
+                return `The <strong>${mapLocations.library.name}</strong> is <strong>#${mapLocations.library.index}</strong> on the map. <a href="${mapLocations.library.link}" target="_blank" class="text-brand-600 underline">Open in Google Maps</a>.`;
             }
             if (lower.includes('admin') || lower.includes('ad block') || lower.includes('office')) {
                 return `The <strong>${mapLocations.admin.name}</strong> is <strong>#${mapLocations.admin.index}</strong> on the map. <a href="${mapLocations.admin.link}" target="_blank" class="text-brand-600 underline">Open in Google Maps</a>.`;
@@ -1146,17 +1165,29 @@
             if (lower.includes('civil') || lower.includes('cv')) {
                 return `The <strong>${mapLocations.civil.name}</strong> is <strong>#${mapLocations.civil.index}</strong> on the map. <a href="${mapLocations.civil.link}" target="_blank" class="text-brand-600 underline">Open in Google Maps</a>.`;
             }
+            if (lower.includes('mech') || lower.includes('mechanical')) {
+                return `The <strong>${mapLocations.mechanical.name}</strong> is <strong>#${mapLocations.mechanical.index}</strong> on the map. <a href="${mapLocations.mechanical.link}" target="_blank" class="text-brand-600 underline">Open in Google Maps</a>.`;
+            }
             if (lower.includes('stadium') || lower.includes('ground') || lower.includes('play') || lower.includes('sports')) {
-                return `The <strong>${mapLocations.stadium.name}</strong> is <strong>#${mapLocations.stadium.index}</strong> on the map. <a href="${mapLocations.stadium.link}" target="_blank" class="text-brand-600 underline">Get details here</a>.`;
+                return `The <strong>${mapLocations.stadium.name}</strong> is <strong>#${mapLocations.stadium.index}</strong> on the map. <a href="${mapLocations.stadium.link}" target="_blank" class="text-brand-600 underline">Open in Google Maps</a>.`;
             }
             if (lower.includes('birla') || lower.includes('audi')) {
-                return `The <strong>Birla Auditorium</strong> is <strong>#${mapLocations.birla.index}</strong> on the map, near the main entrance.`;
+                return `The <strong>${mapLocations.birla.name}</strong> is <strong>#${mapLocations.birla.index}</strong> on the map. <a href="${mapLocations.birla.link}" target="_blank" class="text-brand-600 underline">Open in Google Maps</a>.`;
             }
             if (lower.includes('canteen') || lower.includes('mess') || (lower.includes('food') && !lower.includes('court'))) {
-                return `The main <strong>Canteen</strong> is <strong>#${mapLocations.canteen.index}</strong> on the map. You can check live traffic in the "Food Courts" section!`;
+                return `The main <strong>${mapLocations.canteen.name}</strong> is <strong>#${mapLocations.canteen.index}</strong> on the map. You can check live traffic in the "Food Courts" section! <a href="${mapLocations.canteen.link}" target="_blank" class="text-brand-600 underline">Open in Google Maps</a>.`;
+            }
+            if (lower.includes('hostel') && (lower.includes('girl') || lower.includes('akka'))) {
+                return `The <strong>${mapLocations.hostel_akka.name}</strong> is <strong>#${mapLocations.hostel_akka.index}</strong> on the map. <a href="${mapLocations.hostel_akka.link}" target="_blank" class="text-brand-600 underline">Open in Google Maps</a>.`;
+            }
+            if (lower.includes('hostel')) { // Default to boys
+                return `The <strong>${mapLocations.hostel_basava.name}</strong> is <strong>#${mapLocations.hostel_basava.index}</strong> on the map. <a href="${mapLocations.hostel_basava.link}" target="_blank" class="text-brand-600 underline">Open in Google Maps</a>.`;
+            }
+             if (lower.includes('health') || lower.includes('doctor') || lower.includes('clinic')) {
+                return `The <strong>${mapLocations.health.name}</strong> is <strong>#${mapLocations.health.index}</strong> on the map. <a href="${mapLocations.health.link}" target="_blank" class="text-brand-600 underline">Open in Google Maps</a>.`;
             }
             if (lower.startsWith('where is') || lower.startsWith('how to get to')) {
-                return `I can give you links for the Library, ECE Dept, Admin Block, Civil Hall, and Stadium. Try one of those!`;
+                return `I can give you links for most major departments, the library, canteen, stadium, and hostels. Try one of those!`;
             }
 
             // --- App Questions (with abbreviations) ---
