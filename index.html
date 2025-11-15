@@ -316,7 +316,16 @@
                                     <i class="fa-solid fa-bed text-slate-500 w-5 text-center"></i>
                                     <span class="text-sm font-medium text-slate-700">Basaveshwara Hostel Block</span>
                                 </a>
-                                <a href="https://www.sit.ac.in/hostels" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 rounded-lg">
+                                <a href="https{
+  "key": "AIzaSyBgLNarhtQ94FqMih4H3-qu0lE5jUu79QQ",
+  "authDomain": "sit-connect-hackathon.firebaseapp.com",
+  "projectId": "sit-connect-hackathon",
+  "storageBucket": "sit-connect-hackathon.firebasestorage.app",
+  "messagingSenderId": "600010413731",
+  "appId": "1:600010413731:web:62a6b47ccf280b05bcd116",
+  "measurementId": "G-HQ64BNDDZP"
+}
+.ac.in/hostels" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-slate-100 rounded-lg">
                                     <i class="fa-solid fa-bed text-slate-500 w-5 text-center"></i>
                                     <span class="text-sm font-medium text-slate-700">Akkamahadevi Block (Girls)</span>
                                 </a>
@@ -1099,48 +1108,79 @@
             "birla": { name: "Birla Auditorium", link: "#", index: 2 }
         };
 
+        // NEW SMARTER BOT
         function getBotReply(text) {
-            const lower = text.toLowerCase();
+            const lower = text.toLowerCase().trim();
             
-            // Location Questions
-            if (lower.includes('library')) {
+            // --- Simple Greetings ---
+            if (lower.startsWith('hello') || lower.startsWith('hi') || lower.startsWith('hey')) {
+                return "Hi there! How can I help you today?";
+            }
+            if (lower.includes('how are you')) {
+                return "I'm just a bunch of code, but I'm running perfectly! What can I help you with?";
+            }
+
+            // --- App/Bot Identity ---
+            if (lower === 'who are you' || lower === 'what are you') {
+                return "I'm Siddaganga Bot, your AI assistant for the SIT Connect app. I can help you find locations and understand the app's features.";
+            }
+            if (lower.includes('what can you do') || lower === 'help') {
+                return `I can help with a few things! Try asking me:
+                    <ul class="list-disc list-inside ml-2 mt-1">
+                        <li>"Where is the library?" (or "lib", "admin", "ece")</li>
+                        <li>"How do I change my CGPA?"</li>
+                        <li>"When is the next CIE?"</li>
+                    </ul>`;
+            }
+
+            // --- Location Questions (with abbreviations) ---
+            if (lower.includes('library') || lower.includes('lib') || lower.includes('books')) {
                 return `The <strong>${mapLocations.library.name}</strong> is <strong>#${mapLocations.library.index}</strong> on the map. <a href="${mapLocations.library.link}" target="_blank" class="text-brand-600 underline">Get details here</a>.`;
             }
-            if (lower.includes('admin') || lower.includes('ad block')) {
+            if (lower.includes('admin') || lower.includes('ad block') || lower.includes('office')) {
                 return `The <strong>${mapLocations.admin.name}</strong> is <strong>#${mapLocations.admin.index}</strong> on the map. <a href="${mapLocations.admin.link}" target="_blank" class="text-brand-600 underline">Open in Google Maps</a>.`;
             }
-            if (lower.includes('ece') || lower.includes('communication')) {
+            if (lower.includes('ece') || lower.includes('e&c') || lower.includes('electronics') || lower.includes('communication')) {
                 return `The <strong>${mapLocations.ece.name}</strong> is <strong>#${mapLocations.ece.index}</strong> on the map. <a href="${mapLocations.ece.link}" target="_blank" class="text-brand-600 underline">Open in Google Maps</a>.`;
             }
-            if (lower.includes('civil')) {
+            if (lower.includes('civil') || lower.includes('cv')) {
                 return `The <strong>${mapLocations.civil.name}</strong> is <strong>#${mapLocations.civil.index}</strong> on the map. <a href="${mapLocations.civil.link}" target="_blank" class="text-brand-600 underline">Open in Google Maps</a>.`;
             }
-            if (lower.includes('stadium') || lower.includes('ground')) {
+            if (lower.includes('stadium') || lower.includes('ground') || lower.includes('play') || lower.includes('sports')) {
                 return `The <strong>${mapLocations.stadium.name}</strong> is <strong>#${mapLocations.stadium.index}</strong> on the map. <a href="${mapLocations.stadium.link}" target="_blank" class="text-brand-600 underline">Get details here</a>.`;
             }
-            if (lower.includes('birla') || lower.includes('auditorium')) {
+            if (lower.includes('birla') || lower.includes('audi')) {
                 return `The <strong>Birla Auditorium</strong> is <strong>#${mapLocations.birla.index}</strong> on the map, near the main entrance.`;
             }
-            if (lower.includes('where is')) {
+            if (lower.includes('canteen') || lower.includes('mess') || (lower.includes('food') && !lower.includes('court'))) {
+                return `The main <strong>Canteen</strong> is <strong>#${mapLocations.canteen.index}</strong> on the map. You can check live traffic in the "Food Courts" section!`;
+            }
+            if (lower.startsWith('where is') || lower.startsWith('how to get to')) {
                 return `I can give you links for the Library, ECE Dept, Admin Block, Civil Hall, and Stadium. Try one of those!`;
             }
 
-            // App Questions
-            if (lower.includes('cgpa') || lower.includes('change my data')) {
-                return `Go to the <strong>Admin</strong> section (red button on the sidebar). Click "Load All Students," find your email, and click "Edit" to update your profile.`;
+            // --- App Questions (with abbreviations) ---
+            if (lower.includes('cgpa') || lower.includes('change my data') || lower.includes('my marks') || lower.includes('update profile')) {
+                return `You can view and update your profile data (like CGPA, USN, etc.) by going to the <strong>Admin</strong> section (red button on the sidebar). Click "Load All Students," find your email, and click "Edit".`;
             }
             if (lower.includes('app') || lower.includes('what is this')) {
                 return `I'm SIT Connect! A platform to help you manage your campus life, from live cafeteria traffic to your study plan and campus map.`;
             }
-            if (lower.includes('cie') || lower.includes('exam')) {
-                return `Check the <strong>SIT Events</strong> card on your Dashboard for the latest CIE and Test dates.`;
+            if (lower.includes('cie') || lower.includes('exam') || lower.includes('test') || lower.includes('schedule')) {
+                return `Check the <strong>SIT Events</strong> card on your Dashboard for the latest CIE and Test dates. I've pulled those from the official academic calendar.`;
             }
-            if (lower.includes('traffic') || lower.includes('food')) {
-                return `Go to the <strong>Food Courts</strong> section to see a live simulation of how busy the canteens are, based on the class timetable.`;
+            if (lower.includes('traffic') || lower.includes('food court') || lower.includes('mess busy')) {
+                return `Go to the <strong>Food Courts</strong> section to see a live simulation of how busy the canteens are, based on the class timetable. It updates automatically!`;
+            }
+            if (lower.includes('map')) {
+                return `Go to the <strong>Campus Map</strong> section to see the full map and a list of important locations with Google Maps links.`;
+            }
+            if (lower.includes('planner') || lower.includes('study') || lower.includes('task')) {
+                return `Go to the <strong>SIT Study AI</strong> section to add new study goals. They will be saved to your dashboard.`;
             }
 
-            // Default
-            return "I'm still learning! Try asking about campus locations (like 'Where is the library?') or how to use the app (like 'How do I change my CGPA?').";
+            // --- Default ---
+            return "Sorry, I didn't quite understand that. I'm best at answering questions about campus locations (like 'where is the lib?') or app features (like 'how to change cgpa?').";
         }
         
         // --- UI Functions (now defined as named functions) ---
