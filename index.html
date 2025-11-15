@@ -361,8 +361,8 @@
                             </div>
                             <div class="flex gap-2 mt-2 overflow-x-auto pb-1">
                                 <button data-text="Where is Birla Auditorium?" class="fill-chat-btn whitespace-nowrap text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full">📍 Birla Auditorium</button>
-                                <button data-text="Library Timings?" class="fill-chat-btn whitespace-nowrap text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full">📚 Library Hours</button>
-                                <button data-text="How do I change my CGPA?" class="fill-chat-btn whitespace-nowrap text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full">🧑‍🎓 Change CGPA</button>
+                                <button data-text="What is my CGPA?" class="fill-chat-btn whitespace-nowrap text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full">📊 My CGPA</button>
+                                <button data-text="How's the mess traffic?" class="fill-chat-btn whitespace-nowrap text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full">🍜 Mess Traffic</button>
                             </div>
                         </div>
                     </div>
@@ -444,7 +444,7 @@
                                             <th class="py-2 px-3">USN</th>
                                             <th class="py-2 px-3">Program</th>
                                             <th class="py-2 px-3">CGPA</th>
-                                            <th class="py-2 px-3"></th>
+                                            <th classD="py-2 px-3"></th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-slate-100" id="adminUserListBody">
@@ -493,11 +493,15 @@
         let userId = null;
         let studyPlanUnsubscribe = null;
         let cafeteriaUnsubscribe = null;
-        let profileUnsubscribe = null; // Listener for profile data
-        let currentLiveData = {}; // Store current live data
-        let adminEditingUserId = null; // Store which user is being edited
-        let userToDelete = null; // Store user info for deletion
-        let trafficSimulationTimer = null; // Timer for cafeteria simulation
+        let profileUnsubscribe = null;
+        let currentLiveData = {};
+        let adminEditingUserId = null;
+        let userToDelete = null;
+        let trafficSimulationTimer = null;
+        
+        // NEW: Bot state variables
+        let currentUserProfile = {};
+        let isUserAdmin = false;
 
         // --- FIREBASE CONFIG ---
         // User's actual Firebase config
@@ -544,8 +548,10 @@
                 const adminEmail = "admin@sit.ac.in";
                 if (user.email === adminEmail) {
                     document.getElementById('adminNavButton').style.display = 'flex';
+                    isUserAdmin = true; // NEW: Set admin flag
                 } else {
                     document.getElementById('adminNavButton').style.display = 'none';
+                    isUserAdmin = false; // NEW: Reset admin flag
                 }
                 
                 // Start listening to live data
@@ -561,6 +567,10 @@
             } else {
                 // User is signed out
                 userId = null;
+                // NEW: Clear bot state variables
+                currentUserProfile = {};
+                isUserAdmin = false;
+
                 // Show modal, hide app
                 loginModal.classList.remove('hidden');
                 mainApp.classList.add('hidden');
@@ -632,6 +642,7 @@
             profileUnsubscribe = onSnapshot(profileDoc, (doc) => {
                 if(doc.exists()) {
                     const data = doc.data();
+                    currentUserProfile = data; // NEW: Save to global object
                     document.getElementById('profileUSN').textContent = data.usn || 'Not Set';
                     document.getElementById('profileCGPA').textContent = data.cgpa ? data.cgpa.toFixed(1) : '0.0';
                     document.getElementById('profileDOB').textContent = data.dob || 'Not Set';
@@ -639,6 +650,7 @@
                     document.getElementById('profileSemester').textContent = data.semester ? `Semester ${data.semester}` : 'Not Set';
                 } else {
                     console.log("No profile data for this user.");
+                    currentUserProfile = {}; // NEW: Clear global object
                     document.getElementById('profileUSN').textContent = 'Please Set';
                     document.getElementById('profileCGPA').textContent = 'N/A';
                     document.getElementById('profileDOB').textContent = 'N/A';
@@ -1111,7 +1123,6 @@
 
         
         // --- Chatbot (UPGRADED) ---
-        // NEW: Expanded mapLocations
         const mapLocations = {
             "main": { name: "SIT Main Campus", link: "https://maps.google.com/maps?cid=16683031220794618752", index: 0 },
             "admin": { name: "AD Block (Admin)", link: "https://goo.gl/maps/k1KJFbsqnpaFdua48", index: 1 },
@@ -1127,8 +1138,8 @@
             "stadium": { name: "SIT Stadium", link: "https://maps.google.com/maps?cid=16683031220794618752&q=SIT+Stadium", index: 33 }
         };
 
-        // NEW SMARTER BOT
-        function getBotReply(text) {
+        // NEW: Bot now receives profileData and isAdmin status
+        function getBotReply(text, profileData, isAdmin) {
             const lower = text.toLowerCase().trim();
             
             // --- Simple Greetings ---
@@ -1146,12 +1157,59 @@
             if (lower.includes('what can you do') || lower === 'help') {
                 return `I can help with a few things! Try asking me:
                     <ul class="list-disc list-inside ml-2 mt-1">
-                        <li>"Where is the library?" (or "lib", "admin", "ece")</li>
-                        <li>"How do I change my CGPA?"</li>
+                        <li>"Where is the library?"</li>
+                        <li>"What is my CGPA?"</li>
                         <li>"When is the next CIE?"</li>
                     </ul>`;
             }
 
+            // --- PERSONALIZED DATA QUESTIONS ---
+            if (lower.includes('my cgpa')) {
+                if (profileData && profileData.cgpa) {
+                    let response = `Your current CGPA is <strong>${profileData.cgpa.toFixed(1)}</strong>. `;
+                    if (profileData.cgpa < 8.0) {
+                        response += "Keep working hard and use the Study AI planner to boost that score!";
+                    } else {
+                        response += "Great job! Keep up the excellent work!";
+                    }
+                    return response;
+                } else {
+                    return "I'm sorry, I don't have your CGPA data. It should appear on your dashboard.";
+                }
+            }
+            if (lower.includes('my usn')) {
+                if (profileData && profileData.usn) {
+                    return `Your USN is <strong>${profileData.usn}</strong>.`;
+                } else {
+                    return "I'm sorry, I don't have your USN on file.";
+                }
+            }
+            if (lower.includes('my dob') || lower.includes('my birthday')) {
+                if (profileData && profileData.dob) {
+                    return `Your Date of Birth is <strong>${profileData.dob}</strong>.`;
+                } else {
+                    return "I'm sorry, I don't have your Date of Birth on file.";
+                }
+            }
+            if (lower.includes('my info') || lower.includes('my data') || lower.includes('my details')) {
+                    if (profileData && profileData.usn) {
+                    return `Here's your info:
+                        <ul class="list-disc list-inside ml-2 mt-1">
+                        <li><strong>USN:</strong> ${profileData.usn}</li>
+                        <li><strong>Program:</strong> ${profileData.program}</li>
+                        <li><strong>Semester:</strong> ${profileData.semester}</li>
+                        <li><strong>CGPA:</strong> ${profileData.cgpa.toFixed(1)}</li>
+                        </ul>`;
+                    } else {
+                        return "I can't seem to find your profile data. It should be on your dashboard.";
+                    }
+            }
+
+            // --- BUG FIX: Specific "Timings" check ---
+            if (lower.includes('library') && (lower.includes('timing') || lower.includes('hours') || lower.includes('open'))) {
+                return "SIT Central Library is open 8 AM - 8 PM on weekdays. The reading room is open till 11 PM during exams.";
+            }
+            
             // --- Location Questions (with abbreviations) ---
             if (lower.includes('library') || lower.includes('lib') || lower.includes('books')) {
                 return `The <strong>${mapLocations.library.name}</strong> is <strong>#${mapLocations.library.index}</strong> on the map. <a href="${mapLocations.library.link}" target="_blank" class="text-brand-600 underline">Open in Google Maps</a>.`;
@@ -1191,8 +1249,13 @@
             }
 
             // --- App Questions (with abbreviations) ---
+            // NEW: Admin-only check
             if (lower.includes('cgpa') || lower.includes('change my data') || lower.includes('my marks') || lower.includes('update profile')) {
-                return `You can view and update your profile data (like CGPA, USN, etc.) by going to the <strong>Admin</strong> section (red button on the sidebar). Click "Load All Students," find your email, and click "Edit".`;
+                if (isAdmin) {
+                    return `As an admin, you can go to the <strong>Admin</strong> section, click "Load All Students," find the user, and click "Edit" to update their profile.`;
+                } else {
+                    return `Sorry, only an administrator can change profile data like CGPA. Please contact the college admin office.`;
+                }
             }
             if (lower.includes('app') || lower.includes('what is this')) {
                 return `I'm SIT Connect! A platform to help you manage your campus life, from live cafeteria traffic to your study plan and campus map.`;
@@ -1211,7 +1274,7 @@
             }
 
             // --- Default ---
-            return "Sorry, I didn't quite understand that. I'm best at answering questions about campus locations (like 'where is the lib?') or app features (like 'how to change cgpa?').";
+            return "Sorry, I didn't quite understand that. I'm best at answering questions about campus locations (like 'where is the lib?') or app features (like 'what is my cgpa?').";
         }
         
         // --- UI Functions (now defined as named functions) ---
@@ -1265,12 +1328,13 @@
             container.scrollTop = container.scrollHeight;
 
             setTimeout(() => {
-                const reply = getBotReply(text);
+                // NEW: Pass current profile and admin status
+                const reply = getBotReply(text, currentUserProfile, isUserAdmin); 
                 
                 container.innerHTML += `<div class="flex items-start gap-3 animate-fade-in"><div class="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-600"><i class="fa-solid fa-robot text-sm"></i></div><div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 text-sm text-slate-700 max-w-[80%]">${reply}</div></div>`;
                 container.scrollTop = container.scrollHeight;
             }, 800);
-        }
+        } // <-- THIS WAS THE MISSING BRACE
 
         // --- Charts (static data) ---
         let studyChartInstance = null;
