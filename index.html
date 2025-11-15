@@ -109,6 +109,10 @@
                 <button onclick="showSection('cafeteria')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg">
                     <i class="fa-solid fa-utensils w-5"></i> Food Courts
                 </button>
+                <!-- NEW MAP BUTTON -->
+                <button onclick="showSection('map')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg">
+                    <i class="fa-solid fa-map-location-dot w-5"></i> Campus Map
+                </button>
                 <button onclick="showSection('campusbot')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg">
                     <i class="fa-solid fa-robot w-5"></i> Siddaganga Bot
                 </button>
@@ -144,6 +148,7 @@
                     <button onclick="showSection('dashboard'); toggleMobileMenu()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-100">Dashboard</button>
                     <button onclick="showSection('planner'); toggleMobileMenu()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-100">Study AI</button>
                     <button onclick="showSection('cafeteria'); toggleMobileMenu()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-100">Food Courts</button>
+                    <button onclick="showSection('map'); toggleMobileMenu()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-100">Campus Map</button>
                     <button onclick="showSection('campusbot'); toggleMobileMenu()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-100">Siddaganga Bot</button>
                     <hr class="my-4">
                     <button onclick="handleLogout()" class="w-full text-left px-4 py-3 rounded-lg text-red-600 hover:bg-red-50">Logout</button>
@@ -267,12 +272,39 @@
                     </div>
                 </section>
 
+                <!-- NEW SECTION: MAP -->
+                <section id="map" class="section-content hidden animate-fade-in space-y-6">
+                    <h2 class="text-3xl font-bold text-slate-900">Interactive Campus Map</h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+                            <h3 class="font-bold text-lg mb-4">S.I.T. Campus Index Map</h3>
+                            <!-- The map image is loaded here -->
+                            <img src="https://i.imgur.com/g8B1T6A.jpeg" alt="SIT Campus Map" class="rounded-lg w-full object-contain" onerror="this.onerror=null;this.src='https.placehold.co/800x600/e2e8f0/94a3b8?text=Map+Image+Not+Found';">
+                        </div>
+                        <div class="lg:col-span-1 bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                            <h3 class="font-bold text-lg mb-4">Key Locations</h3>
+                            <div class="space-y-3 max-h-[600px] overflow-y-auto">
+                                <a href="https://maps.google.com/maps?cid=16683031220794618752" target="_blank" class="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100"><div><p class="font-semibold text-brand-600">SIT Main Campus</p><p class="text-xs text-slate-500">13.331037, 77.127539</p></div><i class="fa-solid fa-arrow-up-right-from-square text-slate-400"></i></a>
+                                <a href="https://goo.gl/maps/fcdWAUoYqNbVF6DJA" target="_blank" class="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100"><div><p class="font-semibold">ECE Department</p><p class="text-xs text-slate-500">Map Index #7</p></div><i class="fa-solid fa-arrow-up-right-from-square text-slate-400"></i></a>
+                                <a href="https://goo.gl/maps/44g1VpNtGCz9Qnfr5" target="_blank" class="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100"><div><p class="font-semibold">Civil Dept. Seminar Hall</p><p class="text-xs text-slate-500">Map Index #15 (Main Building)</p></div><i class="fa-solid fa-arrow-up-right-from-square text-slate-400"></i></a>
+                                <a href="https://goo.gl/maps/k1KJFbsqnpaFdua48" target="_blank" class="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100"><div><p class="font-semibold">AD Block Seminar Hall</p><p class="text-xs text-slate-500">Map Index #1</p></div><i class="fa-solid fa-arrow-up-right-from-square text-slate-400"></i></a>
+                                <a href="https://maps.app.goo.gl/g6v4Gv1vE5aC91G89" target="_blank" class="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100"><div><p class="font-semibold">Library (T.N Kempahonnaiah)</p><p class="text-xs text-slate-500">Map Index #3</p></div><i class="fa-solid fa-arrow-up-right-from-square text-slate-400"></i></a>
+                                <a href="https://maps.app.goo.gl/P3Lp1DBwGk5fL1M99" target="_blank" class="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100"><div><p class="font-semibold">SIT Stadium</p><p class="text-xs text-slate-500">Map Index #26 (Playground)</p></div><i class="fa-solid fa-arrow-up-right-from-square text-slate-400"></i></a>
+                                <a href="https://maps.app.goo.gl/f72qX9w4G8j1g1XW9" target="_blank" class="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100"><div><p class="font-semibold">Health Centre</p><p class="text-xs text-slate-500">Map Index #24</p></div><i class="fa-solid fa-arrow-up-right-from-square text-slate-400"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- END NEW SECTION: MAP -->
+
+
                 <!-- SECTION: CAMPUS BOT -->
                 <section id="campusbot" class="section-content hidden animate-fade-in h-[calc(100vh-8rem)] flex flex-col">
                     <div class="flex-1 bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col overflow-hidden max-w-3xl mx-auto w-full">
                         <div class="p-4 border-b"><h2 class="text-xl font-bold text-center text-slate-900">Siddaganga Bot 🤖</h2></div>
                         <div id="chatContainer" class="flex-1 p-6 overflow-y-auto space-y-4 bg-slate-50">
-                            <div class="flex items-start gap-3"><div class="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-600"><i class="fa-solid fa-robot text-sm"></i></div><div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 text-sm text-slate-700 max-w-[80%]">Ask me about SIT locations, exam schedules, or bus timings.</div></div>
+                            <!-- UPDATED BOT WELCOME -->
+                            <div class="flex items-start gap-3"><div class="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-600"><i class="fa-solid fa-robot text-sm"></i></div><div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 text-sm text-slate-700 max-w-[80%]">Ask me anything about SIT! Try 'Where is the library?' or 'How do I change my CGPA?'.</div></div>
                         </div>
                         <div class="p-4 bg-white border-t border-slate-200">
                             <div class="flex gap-2">
@@ -280,9 +312,10 @@
                                 <button onclick="sendChat()" class="bg-brand-600 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-brand-700"><i class="fa-solid fa-paper-plane text-sm"></i></button>
                             </div>
                             <div class="flex gap-2 mt-2 overflow-x-auto pb-1">
-                                <button onclick="fillChat('Where is Birla Auditorium?')" class="whitespace-nowrap text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full">📍 Birla Auditorium</button>
-                                <button onclick="fillChat('Library Timings?')" class="whitespace-nowrap text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full">📚 Library Hours</button>
-                                <button onclick="fillChat('When is the next CIE?')" class="whitespace-nowrap text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full">📝 CIE Dates</button>
+                                <!-- UPDATED SUGGESTIONS -->
+                                <button onclick="fillChat('Where is the Library?')" class="whitespace-nowrap text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full">📍 Library Location</button>
+                                <button onclick="fillChat('How to change my CGPA?')" class="whitespace-nowrap text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full">⚙️ Edit My Profile</button>
+                                <button onclick="fillChat('What is the traffic in the canteen?')" class="whitespace-nowrap text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-full">🍜 Canteen Traffic</button>
                             </div>
                         </div>
                     </div>
@@ -966,7 +999,7 @@
             setTimeout(() => toast.classList.add('translate-y-[-150%]'), 3000);
         }
         
-        // --- Chatbot (remains static for hackathon) ---
+        // --- UPDATED Chatbot (Smarter) ---
         window.fillChat = (text) => document.getElementById('chatInput').value = text;
         window.handleChatKey = (e) => e.key === 'Enter' && sendChat();
         window.sendChat = () => {
@@ -980,11 +1013,36 @@
             container.scrollTop = container.scrollHeight;
 
             setTimeout(() => {
-                let reply = "I'm still learning! Ask about the Library or Birla Auditorium.";
+                let reply = "I'm sorry, I'm not sure how to help with that. Try asking about campus locations or app features.";
                 const lower = text.toLowerCase();
-                if(lower.includes('library')) reply = "SIT Central Library is open 8 AM - 8 PM on weekdays. Reading room is open till 11 PM during exams.";
-                else if(lower.includes('birla')) reply = "Birla Auditorium is near the main entrance, next to the Admin Block.";
-                else if(lower.includes('cie')) reply = "Check the notice board in the Admin Block or your Department ERP for CIE dates.";
+
+                // App-related questions
+                if (lower.includes('cgpa') || lower.includes('usn') || lower.includes('profile')) {
+                    reply = "You can view your profile data on the Dashboard. To change it, go to the 'Admin' section, load all students, find your email, and click 'Edit'.";
+                } else if (lower.includes('app') || lower.includes('sit connect') || lower.includes('who made')) {
+                    reply = "I'm SIT Connect, a hackathon project designed to centralize campus life! I can show live cafeteria traffic, help you plan your studies, and navigate the campus.";
+                } else if (lower.includes('traffic') || lower.includes('canteen') || lower.includes('food court')) {
+                    reply = "Go to the 'Food Courts' tab to see the live simulated traffic for the Main Canteen, Nescafe, and Nandini Parlour, based on class timetables.";
+                } else if (lower.includes('event') || lower.includes('calendar')) {
+                    reply = "You can see upcoming campus events like Tests and fests on the 'Dashboard' page.";
+                }
+                
+                // Location-related questions
+                else if (lower.includes('library')) {
+                    reply = `The T.N Kempahonnaiah Library (Map Index #3) is here: <a href="https://maps.app.goo.gl/g6v4Gv1vE5aC91G89" target="_blank" class="text-brand-500 underline">Open in Google Maps</a>`;
+                } else if (lower.includes('ece') || lower.includes('electronics')) {
+                    reply = `The ECE Department (Map Index #7) is here: <a href="https://goo.gl/maps/fcdWAUoYqNbVF6DJA" target="_blank" class="text-brand-500 underline">Open in Google Maps</a>`;
+                } else if (lower.includes('civil')) {
+                    reply = `The Dr. S. Radhakrishnan Seminar hall (Civil) is in the main Civil building (Map Index #15). You can find it here: <a href="https://goo.gl/maps/44g1VpNtGCz9Qnfr5" target="_blank" class="text-brand-500 underline">Open in Google Maps</a>`;
+                } else if (lower.includes('admin') || lower.includes('ad block')) {
+                    reply = `The Administrative Block (Map Index #1) has a seminar hall. You can find it here: <a href="https://goo.gl/maps/k1KJFbsqnpaFdua48" target="_blank" class="text-brand-500 underline">Open in Google Maps</a>`;
+                } else if (lower.includes('stadium') || lower.includes('playground') || lower.includes('sport')) {
+                    reply = `The SIT Stadium (Map Index #26) is here: <a href="https://maps.app.goo.gl/P3Lp1DBwGk5fL1M99" target="_blank" class="text-brand-500 underline">Open in Google Maps</a>`;
+                } else if (lower.includes('health') || lower.includes('doctor')) {
+                    reply = `The Health Centre (Map Index #24) is here: <a href="https://maps.app.goo.gl/f72qX9w4G8j1g1XW9" target="_blank" class="text-brand-500 underline">Open in Google Maps</a>`;
+                } else if (lower.includes('map')) {
+                    reply = "You can see the full interactive campus map by clicking the 'Campus Map' button in the sidebar!";
+                }
                 
                 container.innerHTML += `<div class="flex items-start gap-3 animate-fade-in"><div class="w-8 h-8 rounded-full bg-brand-100 flex items-center justify-center text-brand-600"><i class="fa-solid fa-robot text-sm"></i></div><div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-100 text-sm text-slate-700 max-w-[80%]">${reply}</div></div>`;
                 container.scrollTop = container.scrollHeight;
